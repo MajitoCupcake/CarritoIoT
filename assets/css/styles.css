@@ -1,0 +1,13 @@
+:root{--brand:#8b7cf7;--muted:#f6f7fb;--ok:#10b981;--warn:#f59e0b;--danger:#ef4444;}
+[data-theme="dark"]{--muted:#0f1220; background:#0b1020; color:#e8ecff;}
+body{background:#f7f8fc;}
+.navbar-brand .emoji{font-size:1.2rem;margin-right:.4rem}
+.card{border-radius:16px;border:1px solid #eef0f6;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.badge-soft{background:#eef0f6;color:#111;border-radius:999px;padding:.25rem .6rem;font-weight:600}
+.drive-pad{display:grid;grid-template-columns:repeat(3,100px);gap:12px;justify-content:center}
+.drive-btn{height:100px;border-radius:16px;border:1px solid #e9ecf3;background:#fff;font-size:22px}
+.drive-btn.stop{background:var(--danger);color:#fff;border:0}
+.log{height:320px;overflow:auto;background:#0b1020;color:#e0e6ff;border-radius:12px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9rem}
+.stamp{color:#aab4ff}
+.table-sticky thead th{position:sticky;top:0;background:#fff;box-shadow:0 1px 0 #eef0f6}
+.theme-toggle{cursor:pointer;border:1px solid #e9ecf3;background:#fff;border-radius:12px;padding:8px 12px}
