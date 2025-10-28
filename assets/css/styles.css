@@ -9,12 +9,6 @@
   --info: #06b6d4;
 }
 
-[data-theme="dark"] {
-  --muted: #0f1220;
-  background: #0b1020;
-  color: #e8ecff;
-}
-
 body {
   background: #f7f8fc;
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -47,42 +41,39 @@ body {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
-[data-theme="dark"] .footer {
-  background: linear-gradient(135deg, #1a1d23 0%, #0f1220 100%);
-  color: #e8ecff;
-  border-top: 1px solid #2d3748;
-}
-
-/* Panel de Control Mejorado */
+/* Panel de Control Corregido */
 .drive-pad-enhanced {
   display: grid;
-  grid-template-columns: repeat(3, 120px);
-  gap: 15px;
+  grid-template-columns: repeat(3, 100px);
+  gap: 12px;
   justify-content: center;
-  margin: 2rem 0;
+  margin: 2rem auto;
+  max-width: 340px;
 }
 
 .drive-btn {
-  height: 120px;
-  border-radius: 20px;
-  border: none;
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
-  box-shadow: 5px 5px 15px #d9d9d9, -5px -5px 15px #ffffff;
-  font-size: 2rem;
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  border: 2px solid #e9ecef;
+  background: white;
+  font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
+  color: #495057;
 }
 
 .drive-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 8px 8px 20px #d9d9d9, -8px -8px 20px #ffffff;
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .drive-btn:active {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 .drive-btn-up { color: #10b981; }
@@ -91,53 +82,176 @@ body {
 .drive-btn-corner { color: #8b5cf6; }
 
 .drive-btn-stop {
-  background: linear-gradient(145deg, #ef4444, #dc2626);
+  background: #ef4444;
   color: white;
-  box-shadow: 5px 5px 15px #d9d9d9, -5px -5px 15px #ffffff;
+  border-color: #ef4444;
 }
 
 .drive-btn-stop:hover {
-  background: linear-gradient(145deg, #dc2626, #b91c1c);
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Botones de acción */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 /* Log mejorado */
 .log-enhanced {
   height: 300px;
   overflow: auto;
-  background: #0f172a;
-  color: #e2e8f0;
-  border-radius: 12px;
+  background: #f8f9fa;
+  color: #212529;
+  border-radius: 8px;
   padding: 1rem;
-  font-family: 'Fira Code', 'Cascadia Code', monospace;
+  font-family: 'Courier New', monospace;
   font-size: 0.9rem;
+  border: 1px solid #dee2e6;
 }
 
 .log-line {
   padding: 0.5rem;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #e9ecef;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .log-time {
-  color: #94a3b8;
+  color: #6c757d;
   font-size: 0.8rem;
 }
 
-.log-success { color: #10b981; }
-.log-error { color: #ef4444; }
-.log-info { color: #3b82f6; }
+.log-success { color: #198754; }
+.log-error { color: #dc3545; }
+.log-info { color: #0dcaf0; }
 
 /* Cards mejoradas */
 .card {
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid #eef0f6;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+/* Dispositivos */
+.device-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+  background: white;
   transition: all 0.3s ease;
 }
 
-.card:hover {
+.device-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.device-card.online {
+  border-left: 4px solid #10b981;
+}
+
+.device-card.offline {
+  border-left: 4px solid #6c757d;
+}
+
+.device-icon {
+  font-size: 2rem;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
+
+.device-name {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.device-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.device-status.online {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.device-status.offline {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.device-ip, .device-last-seen {
+  font-size: 0.85rem;
+  color: #6c757d;
+  display: block;
+}
+
+/* Badges */
+.badge-soft {
+  background: #eef0f6;
+  color: #111;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.movement-badge {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Alertas personalizadas */
+.alert {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Tablas */
+.table th {
+  font-weight: 600;
+  background: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .drive-pad-enhanced {
+    grid-template-columns: repeat(3, 80px);
+    gap: 8px;
+  }
+  
+  .drive-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 1.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+    max-width: 300px;
+  }
 }

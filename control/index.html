@@ -15,9 +15,6 @@
       <i class="fas fa-robot text-primary me-2"></i>IoT Cart Manager
     </a>
     <div class="d-flex align-items-center gap-2">
-      <button id="themeBtn" class="theme-toggle">
-        <i class="fas fa-moon"></i>
-      </button>
       <a class="btn btn-outline-primary" href="../">
         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
       </a>
@@ -36,7 +33,7 @@
     <div class="col-lg-8 mx-auto">
       <!-- Header Mejorado -->
       <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-gradient mb-3">Control Manual</h1>
+        <h1 class="display-5 fw-bold text-primary mb-3">Control Manual</h1>
         <p class="lead text-muted fs-4">Controla tu dispositivo IoT en tiempo real</p>
       </div>
 
@@ -78,13 +75,16 @@
             </button>
           </div>
 
-          <!-- Botones de Demo -->
-          <div class="demo-buttons mt-4 text-center">
+          <!-- Botones de Demo y Obstáculo -->
+          <div class="action-buttons mt-4 text-center">
             <button id="btnDemoL" class="btn btn-outline-primary btn-lg me-3">
               <i class="fas fa-sync-alt me-2"></i>Giro 360° Izquierda
             </button>
-            <button id="btnDemoR" class="btn btn-outline-primary btn-lg">
+            <button id="btnDemoR" class="btn btn-outline-primary btn-lg me-3">
               <i class="fas fa-sync-alt me-2"></i>Giro 360° Derecha
+            </button>
+            <button id="btnObstacle" class="btn btn-warning btn-lg">
+              <i class="fas fa-exclamation-triangle me-2"></i>Simular Obstáculo
             </button>
           </div>
         </div>
@@ -132,9 +132,28 @@
 
 <script type="module">
 import "../assets/js/config.js";
-import { sendMove, sendDemo } from "../assets/js/api.js";
+import { sendMove, sendDemo, sendObstacle } from "../assets/js/api.js";
 
 const log = document.getElementById("log");
+
+function showAlert(message, type = 'success') {
+  const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+  alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+  alertDiv.innerHTML = `
+    <strong>${type === 'error' ? 'Error!' : 'Éxito!'}</strong> ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  document.body.appendChild(alertDiv);
+  
+  // Auto-remove after 3 seconds
+  setTimeout(() => {
+    if (alertDiv.parentNode) {
+      alertDiv.remove();
+    }
+  }, 3000);
+}
 
 function addLog(txt, err = false) {
   const line = document.createElement("div");
@@ -153,10 +172,25 @@ function addLog(txt, err = false) {
 document.querySelectorAll(".drive-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     const dir = btn.dataset.move;
+    const directionNames = {
+      'forward': 'Adelante',
+      'backward': 'Atrás', 
+      'stop': 'Detener',
+      'rotate_left': 'Giro Izquierda',
+      'rotate_right': 'Giro Derecha',
+      'forward_left': 'Adelante Izquierda',
+      'forward_right': 'Adelante Derecha',
+      'backward_left': 'Atrás Izquierda',
+      'backward_right': 'Atrás Derecha'
+    };
+    
     try {
       await sendMove(dir, 70); // Velocidad fija en 70%
+      const directionName = directionNames[dir] || dir;
+      showAlert(`Comando enviado: ${directionName}`);
       addLog(`Movimiento: "${dir}" enviado correctamente`);
     } catch(e) {
+      showAlert(`Error al enviar comando: ${e}`, 'error');
       addLog(`Error en "${dir}": ${e}`, true);
     }
   });
@@ -166,8 +200,10 @@ document.querySelectorAll(".drive-btn").forEach(btn => {
 document.getElementById("btnDemoL").onclick = async () => {
   try {
     await sendDemo("spin_left", 10);
+    showAlert("Demo: Giro 360° Izquierda ejecutada");
     addLog(`Demo "spin_left" ejecutada`);
   } catch(e) {
+    showAlert(`Error en demo: ${e}`, 'error');
     addLog(`Error en demo: ${e}`, true);
   }
 };
@@ -175,9 +211,23 @@ document.getElementById("btnDemoL").onclick = async () => {
 document.getElementById("btnDemoR").onclick = async () => {
   try {
     await sendDemo("spin_right", 10);
+    showAlert("Demo: Giro 360° Derecha ejecutada");
     addLog(`Demo "spin_right" ejecutada`);
   } catch(e) {
+    showAlert(`Error en demo: ${e}`, 'error');
     addLog(`Error en demo: ${e}`, true);
+  }
+};
+
+// Simular Obstáculo
+document.getElementById("btnObstacle").onclick = async () => {
+  try {
+    await sendObstacle(15, 20);
+    showAlert("Obstáculo simulado a 15cm");
+    addLog(`Obstáculo simulado a 15cm`);
+  } catch(e) {
+    showAlert(`Error simulando obstáculo: ${e}`, 'error');
+    addLog(`Error en obstáculo: ${e}`, true);
   }
 };
 </script>
