@@ -1,74 +1,284 @@
 <!doctype html>
-<html lang="es"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>IoT Cart Manager · Dashboard</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="./assets/css/styles.css" rel="stylesheet"></head>
+<link href="./assets/css/styles.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
 <body>
 <nav class="navbar navbar-light bg-white border-bottom sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#"><span class="emoji">🤖</span>IoT Cart Manager</a>
+    <a class="navbar-brand fw-bold fs-3" href="#">
+      <i class="fas fa-robot text-primary me-2"></i>IoT Cart Manager
+    </a>
     <div class="d-flex align-items-center gap-2">
-      <button id="themeBtn" class="theme-toggle">🌓</button>
-      <a class="btn btn-outline-secondary" href="./">Dashboard</a>
-      <a class="btn btn-outline-secondary" href="./control/">🎮 Control</a>
-      <a class="btn btn-outline-secondary" href="./monitor/">📡 Monitoreo</a>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">➕ Add Device</button>
+      <button id="themeBtn" class="theme-toggle">
+        <i class="fas fa-moon"></i>
+      </button>
+      <a class="btn btn-primary active" href="./">
+        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+      </a>
+      <a class="btn btn-outline-primary" href="./control/">
+        <i class="fas fa-gamepad me-1"></i>Control
+      </a>
+      <a class="btn btn-outline-primary" href="./monitor/">
+        <i class="fas fa-satellite-dish me-1"></i>Monitoreo
+      </a>
+      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+        <i class="fas fa-plus me-1"></i>Add Device
+      </button>
     </div>
   </div>
 </nav>
+
 <div class="container py-4">
-  <h3 class="mb-3">Dashboard</h3>
-  <div class="row g-3">
-    <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <h5 class="card-title">Last Movement Status</h5>
-      <div id="last-move" class="mt-3">
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Movement</span><span id="lm-move" class="fw-bold">—</span></div>
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Speed</span><span id="lm-speed">—</span></div>
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Comment</span><span id="lm-comment">—</span></div>
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Time</span><span id="lm-time">—</span></div>
-      </div>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <h5 class="card-title">Last Obstacle Status</h5>
-      <div id="last-obs" class="mt-3">
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Status</span><span id="lo-status" class="fw-bold">—</span></div>
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Distance</span><span id="lo-dist">—</span></div>
-        <div class="d-flex align-items-center gap-2"><span class="badge-soft">Time</span><span id="lo-time">—</span></div>
-      </div>
-    </div></div></div>
-    <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <h5 class="card-title">Command Log (WS)</h5>
-      <div class="log" id="ws-log"></div>
-    </div></div></div>
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-gradient mb-3">Dashboard Principal</h1>
+    <p class="lead text-muted fs-4">Visión general del sistema IoT en tiempo real</p>
   </div>
-  <div class="card mt-4"><div class="card-body">
-    <h5 class="card-title">Last 10 Movements</h5>
-    <div class="table-responsive table-sticky">
-      <table class="table align-middle" id="tbl-moves">
-        <thead><tr><th>Movement</th><th>Speed</th><th>Comment</th><th>Timestamp</th></tr></thead>
-        <tbody></tbody>
-      </table>
+
+  <div class="row g-4">
+    <!-- Last Movement Status -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-directions me-2"></i>Último Movimiento
+          </h5>
+        </div>
+        <div class="card-body">
+          <div id="last-move" class="mt-3">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="badge bg-light text-dark fs-6">Movimiento</span>
+              <span id="lm-move" class="fw-bold fs-5">—</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="badge bg-light text-dark fs-6">Velocidad</span>
+              <span id="lm-speed" class="fs-5">—</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="badge bg-light text-dark fs-6">Comentario</span>
+              <span id="lm-comment" class="fs-6">—</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-light text-dark fs-6">Tiempo</span>
+              <span id="lm-time" class="fs-6">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div></div>
+
+    <!-- Last Obstacle Status -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-exclamation-triangle me-2"></i>Estado de Obstáculos
+          </h5>
+        </div>
+        <div class="card-body">
+          <div id="last-obs" class="mt-3">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="badge bg-light text-dark fs-6">Estado</span>
+              <span id="lo-status" class="fw-bold fs-5">—</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="badge bg-light text-dark fs-6">Distancia</span>
+              <span id="lo-dist" class="fs-5">—</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-light text-dark fs-6">Tiempo</span>
+              <span id="lo-time" class="fs-6">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Command Log -->
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-header bg-info text-white">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-broadcast-tower me-2"></i>Log WebSocket
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="log-enhanced" id="ws-log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Last 10 Movements Table -->
+  <div class="card mt-4 shadow-sm border-0">
+    <div class="card-header bg-success text-white">
+      <h5 class="card-title mb-0 fs-4">
+        <i class="fas fa-history me-2"></i>Últimos 10 Movimientos
+      </h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive table-sticky">
+        <table class="table table-hover align-middle mb-0" id="tbl-moves">
+          <thead class="table-light">
+            <tr>
+              <th class="fs-6">Movimiento</th>
+              <th class="fs-6">Velocidad</th>
+              <th class="fs-6">Comentario</th>
+              <th class="fs-6">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="modal fade" id="addDeviceModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
-  <div class="modal-header"><h5 class="modal-title">Add New Device</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-  <div class="modal-body"><label class="form-label">Name</label><input id="newDeviceName" class="form-control" value="NewDevice"></div>
-  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button class="btn btn-primary" id="saveDeviceBtn" data-bs-dismiss="modal">Save</button></div>
-</div></div></div>
+
+<!-- Footer -->
+<footer class="footer mt-5 py-4 bg-light border-top">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0 fw-bold fs-5">
+          <i class="fas fa-user-graduate me-2 text-primary"></i>
+          Mary Jose Hernández Fernández
+        </p>
+        <p class="mb-0 text-muted fs-6">
+          <i class="fas fa-laptop-code me-2"></i>
+          Ingeniería en Sistemas Computacionales
+        </p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="https://www.linkedin.com/in/mary-jose-hernández-fernández" 
+           class="btn btn-outline-primary btn-lg" target="_blank">
+          <i class="fab fa-linkedin me-2"></i>
+          Conectar en LinkedIn
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-4">Agregar Nuevo Dispositivo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label fs-6">Nombre del Dispositivo</label>
+        <input id="newDeviceName" class="form-control form-control-lg" value="NuevoDispositivo">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button class="btn btn-success" id="saveDeviceBtn" data-bs-dismiss="modal">
+          <i class="fas fa-save me-1"></i>Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import "./assets/js/config.js";
-import { getLastMovement,getLastObstacle,getMovements } from "./assets/js/api.js";
-import { connectWS,onWSMessage } from "./assets/js/ws.js";
-function text(el,val){ el.textContent = val ?? "—"; }
-function fmt(x){ return x?.time || x?.timestamp || x?.fecha || "—"; }
-async function loadLasts(){ try{ const [lm,lo]=await Promise.all([getLastMovement(),getLastObstacle()]); const m=Array.isArray(lm)&&lm[0]?lm[0]:lm; const o=Array.isArray(lo)&&lo[0]?lo[0]:lo; text(document.getElementById("lm-move"),m?.movement||m?.status||"—"); text(document.getElementById("lm-speed"),(m?.speed!=null? m.speed+"%":"—")); text(document.getElementById("lm-comment"),m?.comment||"—"); text(document.getElementById("lm-time"),fmt(m)); text(document.getElementById("lo-status"),o?.status||"—"); text(document.getElementById("lo-dist"),(o?.distance_cm!=null? o.distance_cm+" cm": (o?.distance? o.distance+" cm":"—"))); text(document.getElementById("lo-time"),fmt(o)); }catch(e){ console.error(e);} }
-async function loadTable(){ try{ const rows=await getMovements(); const tb=document.querySelector("#tbl-moves tbody"); tb.innerHTML=""; (rows||[]).forEach(r=>{ const tr=document.createElement("tr"); tr.innerHTML=`<td><span class="badge-soft">${r.movement||r.status||"—"}</span></td><td>${r.speed!=null? r.speed+"%":"—"}</td><td>${r.comment||""}</td><td>${r.timestamp||r.time||""}</td>`; tb.appendChild(tr);}); }catch(e){ console.error(e);} }
-function initWS(){ const log=document.getElementById("ws-log"); connectWS(); onWSMessage(msg=>{ const div=document.createElement("div"); const stamp=new Date().toLocaleTimeString(); div.innerHTML=`<span class="stamp">[${stamp}]</span> ${JSON.stringify(msg).replaceAll("<","&lt;").replaceAll(">","&gt;")}`; log.appendChild(div); log.scrollTop=log.scrollHeight; }); }
-function initTheme(){ const btn=document.getElementById("themeBtn"); const apply=(t)=>{ document.documentElement.setAttribute("data-theme",t); localStorage.setItem("theme",t); }; let cur=localStorage.getItem("theme")||"light"; apply(cur); btn.onclick=()=>{ cur=cur==="light"?"dark":"light"; apply(cur); }; }
-document.getElementById("saveDeviceBtn").onclick=()=>{ const name=document.getElementById("newDeviceName").value||"NewDevice"; alert("Saved device: "+name+" (solo UI)"); };
-initTheme(); initWS(); loadLasts(); loadTable(); setInterval(()=>{ loadLasts(); loadTable(); }, 6000);
+import { getLastMovement, getLastObstacle, getMovements } from "./assets/js/api.js";
+import { connectWS, onWSMessage } from "./assets/js/ws.js";
+
+function text(el, val) { el.textContent = val ?? "—"; }
+function fmt(x) { return x?.time || x?.timestamp || x?.fecha || "—"; }
+
+async function loadLasts() {
+  try {
+    const [lm, lo] = await Promise.all([getLastMovement(), getLastObstacle()]);
+    const m = Array.isArray(lm) && lm[0] ? lm[0] : lm;
+    const o = Array.isArray(lo) && lo[0] ? lo[0] : lo;
+    
+    text(document.getElementById("lm-move"), m?.movement || m?.status || "—");
+    text(document.getElementById("lm-speed"), (m?.speed != null ? m.speed + "%" : "—"));
+    text(document.getElementById("lm-comment"), m?.comment || "—");
+    text(document.getElementById("lm-time"), fmt(m));
+    
+    text(document.getElementById("lo-status"), o?.status || "—");
+    text(document.getElementById("lo-dist"), (o?.distance_cm != null ? o.distance_cm + " cm" : (o?.distance ? o.distance + " cm" : "—")));
+    text(document.getElementById("lo-time"), fmt(o));
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function loadTable() {
+  try {
+    const rows = await getMovements();
+    const tb = document.querySelector("#tbl-moves tbody");
+    tb.innerHTML = "";
+    (rows || []).forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><span class="badge movement-badge">${r.movement || r.status || "—"}</span></td>
+        <td class="fw-bold">${r.speed != null ? r.speed + "%" : "—"}</td>
+        <td>${r.comment || ""}</td>
+        <td class="text-muted small">${r.timestamp || r.time || ""}</td>
+      `;
+      tb.appendChild(tr);
+    });
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function initWS() {
+  const log = document.getElementById("ws-log");
+  connectWS();
+  onWSMessage(msg => {
+    const div = document.createElement("div");
+    const stamp = new Date().toLocaleTimeString();
+    div.className = "log-line log-info";
+    div.innerHTML = `
+      <span class="log-time">[${stamp}]</span>
+      <span class="log-message">${JSON.stringify(msg).replaceAll("<","&lt;").replaceAll(">","&gt;")}</span>
+      <i class="fas fa-broadcast-tower ms-2"></i>
+    `;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  });
+}
+
+function initTheme() {
+  const btn = document.getElementById("themeBtn");
+  const apply = (t) => {
+    document.documentElement.setAttribute("data-theme", t);
+    localStorage.setItem("theme", t);
+  };
+  let cur = localStorage.getItem("theme") || "light";
+  apply(cur);
+  btn.onclick = () => {
+    cur = cur === "light" ? "dark" : "light";
+    apply(cur);
+  };
+}
+
+document.getElementById("saveDeviceBtn").onclick = () => {
+  const name = document.getElementById("newDeviceName").value || "NuevoDispositivo";
+  alert("Dispositivo guardado: " + name + " (solo UI)");
+};
+
+initTheme();
+initWS();
+loadLasts();
+loadTable();
+setInterval(() => {
+  loadLasts();
+  loadTable();
+}, 6000);
 </script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body></html>
+</body>
+</html>
