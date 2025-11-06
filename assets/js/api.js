@@ -61,3 +61,25 @@ export async function sendObstacle(distanceCm = 15, thresholdCm = 20) {
         body: JSON.stringify({ distanceCm, thresholdCm })
     });
 }
+
+// (Añadir al final de api.js)
+
+export async function getSequences() {
+    return handleRequest(`${API_BASE}/sequences`);
+}
+
+export async function saveSequence(name, steps) {
+    // Envía el nombre y la lista de pasos
+    return handleRequest(`${API_BASE}/sequences`, {
+        method: 'POST',
+        body: JSON.stringify({ name, steps })
+    });
+}
+
+export async function runSequence(name) {
+    // Envía solo el nombre de la secuencia a ejecutar
+    return handleRequest(`${API_BASET}/control/run-sequence`, {
+        method: 'POST',
+        body: JSON.stringify({ name })
+    });
+}
