@@ -190,6 +190,9 @@
 import "./assets/js/config.js";
 import { getLastMovement, getLastObstacle, getMovements } from "./assets/js/api.js";
 import { connectWS, onWSMessage } from "./assets/js/ws.js";
+import "../assets/js/config.js";
+import { getMovements, getObstacles } from "../assets/js/api.js";
+import { connectWS, onWSMessage, sendWSMessage } from "../assets/js/ws.js";
 
 function text(el, val) { el.textContent = val ?? "—"; }
 function fmt(x) { return x?.time || x?.timestamp || x?.fecha || "—"; }
@@ -331,6 +334,150 @@ setInterval(() => {
   loadLasts();
   loadTable();
 }, 6000);
+function addWS(txt) {
+    const stamp = new Date().toLocaleTimeString();
+    const div = document.createElement("div");
+    div.className = "log-line log-info";
+    div.innerHTML = `
+        <span class="log-time">[${stamp}]</span>
+        <span class="log-message">${typeof txt === 'string' ? txt : JSON.stringify(txt)}</span>
+        <i class="fas fa-broadcast-tower ms-2"></i>
+    `;
+    wslog.appendChild(div);
+    wslog.scrollTop = wslog.scrollHeight;
+}
+
+// Función para actualizar la tabla de movimientos
+function updateMovementsTable(movements) {
+    const tbM = document.querySelector("#tbl-moves tbody");
+    tbM.innerHTML = "";
+    
+    if (movements && movements.length > 0) {
+        movements.forEach(r => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><span class="badge movement-badge">${r.movement || r.status || "—"}</span></td>
+                <td class="fw-bold">${r.speed != null ? r.speed + "%" : "—"}</td>
+                <td>${r.comment || ""}</td>
+                <td class="text-muted small">${r.timestamp || r.time || ""}</td>
+            `;
+            tbM.appendChild(tr);
+        });
+    } else {
+        tbM.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center text-muted py-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No hay movimientos registrados
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Función para actualizar la tabla de obstáculos
+function updateObstaclesTable(obstacles) {
+    const tbO = document.querySelector("#tbl-obs tbody");
+    tbO.innerHTML = "";
+    
+    if (obstacles && obstacles.length > 0) {
+        obstacles.forEach(r => {
+            const status = r.status || r.estado || "—";
+            const distance = r.distance_cm || r.distance || "?";
+            const message = r.message || r.mensaje || (status === "OBSTACULO" ? `Obstáculo a ${distance}cm` : "Camino despejado");
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><span class="badge ${status === 'OBSTACULO' ? 'bg-danger' : 'bg-success'}">${status}</span></td>
+                <td>${message}</td>
+                <td class="text-muted small">${r.timestamp || r.time || ""}</td>
+            `;
+            tbO.appendChild(tr);
+        });
+    } else {
+        tbO.innerHTML = `
+            <tr>
+                <td colspan="3" class="text-center text-muted py-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    No hay datos de obstáculos
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// WebSocket para NOTIFICACIONES PUSH
+connectWS();
+onWSMessage(msg => {
+    console.log("📨 Notificación WebSocket recibida:", msg);
+    addWS(msg);
+    
+    if (msg.type === "new_movement") {
+        // ACTUALIZACIÓN INSTANTÁNEA - Agregar nuevo movimiento a la tabla
+        const currentMovements = Array.from(document.querySelectorAll("#tbl-moves tbody tr"));
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td><span class="badge movement-badge">${msg.movement.movement}</span></td>
+            <td class="fw-bold">${msg.movement.speed}%</td>
+            <td>${msg.movement.comment}</td>
+            <td class="text-muted small">${msg.movement.timestamp}</td>
+        `;
+        document.querySelector("#tbl-moves tbody").insertBefore(newRow, document.querySelector("#tbl-moves tbody").firstChild);
+        
+        // Limitar a 10 filas
+        if (currentMovements.length >= 10) {
+            document.querySelector("#tbl-moves tbody").lastChild.remove();
+        }
+        
+        addWS(`🚀 NUEVO MOVIMIENTO: ${msg.movement.movement}`);
+        
+    } else if (msg.type === "new_obstacle") {
+        // ACTUALIZACIÓN INSTANTÁNEA - Agregar nuevo obstáculo a la tabla
+        const currentObstacles = Array.from(document.querySelectorAll("#tbl-obs tbody tr"));
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td><span class="badge ${msg.obstacle.status === 'OBSTACULO' ? 'bg-danger' : 'bg-success'}">${msg.obstacle.status}</span></td>
+            <td>${msg.obstacle.message}</td>
+            <td class="text-muted small">${msg.obstacle.timestamp}</td>
+        `;
+        document.querySelector("#tbl-obs tbody").insertBefore(newRow, document.querySelector("#tbl-obs tbody").firstChild);
+        
+        // Limitar a 10 filas
+        if (currentObstacles.length >= 10) {
+            document.querySelector("#tbl-obs tbody").lastChild.remove();
+        }
+        
+        addWS(`🚧 NUEVO OBSTÁCULO: ${msg.obstacle.status}`);
+    }
+});
+
+// Cargar datos iniciales
+async function loadTables() {
+    try {
+        console.log("🔄 Cargando datos iniciales...");
+        const [moves, obs] = await Promise.all([getMovements(), getObstacles()]);
+        
+        console.log("Movimientos recibidos:", moves);
+        console.log("Obstáculos recibidos:", obs);
+        
+        updateMovementsTable(moves);
+        updateObstaclesTable(obs);
+        
+        addWS(`✅ Datos cargados: ${moves?.length || 0} movimientos, ${obs?.length || 0} obstáculos`);
+        
+    } catch(e) {
+        console.error("Error cargando tablas:", e);
+        addWS("❌ Error cargando datos: " + e.message);
+    }
+}
+
+// Cargar inmediatamente
+loadTables();
+
+// Mantener polling como respaldo
+setInterval(loadTables, 10000);
+
+console.log("🔔 Monitor configurado para notificaciones push");
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
