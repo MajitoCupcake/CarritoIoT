@@ -153,24 +153,24 @@
       const div = document.createElement("div");
 
       if (msg.type === "connection") {
-          // Cargar datos iniciales cuando nos conectamos
           message = "🔌 Conectado - Cargando datos...";
           div.className = "log-line log-info";
           try {
+              // --- INICIO CORRECCIÓN (Carga Inicial) ---
               const [lastMove, lastObstacle] = await Promise.all([
                   getLastMovement(),
                   getLastObstacle()
               ]);
               
-              // Actualizar UI con datos iniciales
-              text(document.getElementById("lm-move"), lastMove?.movement || "—");
-              text(document.getElementById("lm-speed"), lastMove?.speed != null ? lastMove.speed + "%" : "—");
+              text(document.getElementById("lm-move"), lastMove?.movement_code || "—");
+              text(document.getElementById("lm-speed"), lastMove?.speed_pct != null ? lastMove.speed_pct + "%" : "—");
               text(document.getElementById("lm-comment"), lastMove?.comment || "—");
-              text(document.getElementById("lm-time"), lastMove?.timestamp || "—");
+              text(document.getElementById("lm-time"), lastMove?.event_time || "—");
               
-              text(document.getElementById("lo-status"), lastObstacle?.status || "—");
+              text(document.getElementById("lo-status"), lastObstacle?.status_code || "—");
               text(document.getElementById("lo-dist"), lastObstacle?.distance_cm != null ? lastObstacle.distance_cm + " cm" : "—");
-              text(document.getElementById("lo-time"), lastObstacle?.timestamp || "—");
+              text(document.getElementById("lo-time"), lastObstacle?.event_time || "—");
+              // --- FIN CORRECCIÓN ---
               
           } catch (error) {
               console.error("Error cargando datos iniciales:", error);
@@ -179,23 +179,24 @@
           }
       }
       else if (msg.type === "new_movement") {
-          // ACTUALIZACIÓN PUSH - Actualizar último movimiento
-          message = `🚀 MOVIMIENTO: ${msg.movement.movement}`;
+          // --- INICIO CORRECCIÓN (PUSH Movimiento) ---
+          message = `🚀 MOVIMIENTO: ${msg.movement.movement_code}`;
           div.className = "log-line log-success";
-          text(document.getElementById("lm-move"), msg.movement.movement);
-          text(document.getElementById("lm-speed"), msg.movement.speed + "%");
+          text(document.getElementById("lm-move"), msg.movement.movement_code);
+          text(document.getElementById("lm-speed"), msg.movement.speed_pct + "%");
           text(document.getElementById("lm-comment"), msg.movement.comment);
-          text(document.getElementById("lm-time"), msg.movement.timestamp);
+          text(document.getElementById("lm-time"), msg.movement.event_time);
+          // --- FIN CORRECCIÓN ---
           
       } else if (msg.type === "new_obstacle") {
-          // ACTUALIZACIÓN PUSH - Actualizar último obstáculo
-          message = `🚧 OBSTÁCULO: ${msg.obstacle.status}`;
+          // --- INICIO CORRECCIÓN (PUSH Obstáculo) ---
+          message = `🚧 OBSTÁCULO: ${msg.obstacle.status_code}`;
           div.className = "log-line log-warning";
-          text(document.getElementById("lo-status"), msg.obstacle.status);
+          text(document.getElementById("lo-status"), msg.obstacle.status_code);
           text(document.getElementById("lo-dist"), msg.obstacle.distance_cm + " cm");
-          text(document.getElementById("lo-time"), msg.obstacle.timestamp);
+          text(document.getElementById("lo-time"), msg.obstacle.event_time);
+          // --- FIN CORRECCIÓN ---
       } else {
-          // Otros mensajes
           message = JSON.stringify(msg);
           div.className = "log-line log-info";
       }
