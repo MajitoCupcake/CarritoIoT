@@ -313,4 +313,37 @@ body {
 .drive-pad-demos .drive-btn-demo {
   flex: 1; /* Hace que ambos botones ocupen el espacio disponible */
 }
+/* --- Colores para Botones de Control (RESTAURACIÓN) --- */
+
+/* Botones de flechas (Adelante/Atrás) */
+.drive-btn-up { 
+  color: #10b981 !important; /* Verde */
+}
+.drive-btn-down { 
+  color: #3b82f6 !important; /* Azul */
+}
+
+/* Botones de giros (Izquierda/Derecha) */
+.drive-btn-left, 
+.drive-btn-right { 
+  color: #f59e0b !important; /* Naranja */
+}
+
+/* ESTA ES LA REGLA QUE FALTA:
+  Botones de esquinas (Diagonales) 
+*/
+.drive-btn-corner { 
+  color: #8b5cf6 !important; /* Morado */
+}
+
+/* Estilo para el botón de Parar */
+.drive-btn-stop {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+.drive-btn-stop:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
 }
