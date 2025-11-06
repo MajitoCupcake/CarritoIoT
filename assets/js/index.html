@@ -234,72 +234,20 @@ async function loadTable() {
 }
 
 function initWS() {
-    const log = document.getElementById("ws-log");
-    
-    connectWS();
-    onWSMessage(async (msg) => {
-        if (msg.type === "connection") {
-            // Cargar datos iniciales cuando nos conectamos
-            try {
-                const [lastMove, lastObstacle] = await Promise.all([
-                    getLastMovement(),
-                    getLastObstacle()
-                ]);
-                
-                // Actualizar UI con datos iniciales
-                text(document.getElementById("lm-move"), lastMove?.movement || "—");
-                text(document.getElementById("lm-speed"), lastMove?.speed != null ? lastMove.speed + "%" : "—");
-                text(document.getElementById("lm-comment"), lastMove?.comment || "—");
-                text(document.getElementById("lm-time"), lastMove?.timestamp || "—");
-                
-                text(document.getElementById("lo-status"), lastObstacle?.status || "—");
-                text(document.getElementById("lo-dist"), lastObstacle?.distance_cm != null ? lastObstacle.distance_cm + " cm" : "—");
-                text(document.getElementById("lo-time"), lastObstacle?.timestamp || "—");
-                
-            } catch (error) {
-                console.error("Error cargando datos iniciales:", error);
-            }
-        }
-        else if (msg.type === "new_movement") {
-            // ACTUALIZACIÓN PUSH - Actualizar último movimiento
-            document.getElementById("lm-move").textContent = msg.movement.movement;
-            document.getElementById("lm-speed").textContent = msg.movement.speed + "%";
-            document.getElementById("lm-comment").textContent = msg.movement.comment;
-            document.getElementById("lm-time").textContent = msg.movement.timestamp;
-            
-            // Agregar al log
-            const div = document.createElement("div");
-            const stamp = new Date().toLocaleTimeString();
-            div.className = "log-line log-success";
-            div.innerHTML = `
-                <span class="log-time">[${stamp}]</span>
-                <span class="log-message">🚀 MOVIMIENTO: ${msg.movement.movement}</span>
-                <i class="fas fa-arrow-right ms-2"></i>
-            `;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-            
-        } else if (msg.type === "new_obstacle") {
-            // ACTUALIZACIÓN PUSH - Actualizar último obstáculo
-            document.getElementById("lo-status").textContent = msg.obstacle.status;
-            document.getElementById("lo-dist").textContent = msg.obstacle.distance_cm + " cm";
-            document.getElementById("lo-time").textContent = msg.obstacle.timestamp;
-            
-            // Agregar al log
-            const div = document.createElement("div");
-            const stamp = new Date().toLocaleTimeString();
-            div.className = "log-line log-warning";
-            div.innerHTML = `
-                <span class="log-time">[${stamp}]</span>
-                <span class="log-message">🚧 OBSTÁCULO: ${msg.obstacle.status}</span>
-                <i class="fas fa-exclamation-triangle ms-2"></i>
-            `;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-        }
-    });
-    
-    console.log("🔔 Dashboard configurado - Solo PUSH activo");
+  const log = document.getElementById("ws-log");
+  connectWS();
+  onWSMessage(msg => {
+    const div = document.createElement("div");
+    const stamp = new Date().toLocaleTimeString();
+    div.className = "log-line log-info";
+    div.innerHTML = `
+      <span class="log-time">[${stamp}]</span>
+      <span class="log-message">${JSON.stringify(msg).replaceAll("<","&lt;").replaceAll(">","&gt;")}</span>
+      <i class="fas fa-broadcast-tower ms-2"></i>
+    `;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  });
 }
 
 function initTheme() {

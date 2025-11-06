@@ -1,0 +1,257 @@
+:root {
+  --brand: #8b7cf7;
+  --muted: #f6f7fb;
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --primary: #3b82f6;
+  --success: #10b981;
+  --info: #06b6d4;
+}
+
+body {
+  background: #f7f8fc;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Textos más grandes */
+.display-5 {
+  font-size: 2.5rem !important;
+}
+
+.fs-4 {
+  font-size: 1.25rem !important;
+}
+
+.fs-5 {
+  font-size: 1.1rem !important;
+}
+
+.fs-6 {
+  font-size: 1rem !important;
+}
+
+/* Navbar mejorada */
+.navbar-brand {
+  font-size: 1.5rem !important;
+}
+
+/* Footer */
+.footer {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Panel de Control Corregido */
+.drive-pad-enhanced {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 12px;
+  justify-content: center;
+  margin: 2rem auto;
+  max-width: 340px;
+}
+
+.drive-btn {
+  width: 100px;
+  height: 100px;
+  border-radius: 16px;
+  border: 2px solid #e9ecef;
+  background: white;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  color: #495057;
+}
+
+.drive-btn:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.drive-btn:active {
+  transform: translateY(0);
+}
+
+.drive-btn-up { color: #10b981; }
+.drive-btn-down { color: #3b82f6; }
+.drive-btn-left, .drive-btn-right { color: #f59e0b; }
+.drive-btn-corner { color: #8b5cf6; }
+
+.drive-btn-stop {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.drive-btn-stop:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Botones de acción */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Log mejorado */
+.log-enhanced {
+  height: 300px;
+  overflow: auto;
+  background: #f8f9fa;
+  color: #212529;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  border: 1px solid #dee2e6;
+}
+
+.log-line {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.log-time {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.log-success { color: #198754; }
+.log-error { color: #dc3545; }
+.log-info { color: #0dcaf0; }
+
+/* Cards mejoradas */
+.card {
+  border-radius: 12px;
+  border: 1px solid #eef0f6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+/* Dispositivos */
+.device-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.device-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.device-card.online {
+  border-left: 4px solid #10b981;
+}
+
+.device-card.offline {
+  border-left: 4px solid #6c757d;
+}
+
+.device-icon {
+  font-size: 2rem;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
+
+.device-name {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.device-status {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.device-status.online {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.device-status.offline {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.device-ip, .device-last-seen {
+  font-size: 0.85rem;
+  color: #6c757d;
+  display: block;
+}
+
+/* Badges */
+.badge-soft {
+  background: #eef0f6;
+  color: #111;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.movement-badge {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Alertas personalizadas */
+.alert {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Tablas */
+.table th {
+  font-weight: 600;
+  background: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .drive-pad-enhanced {
+    grid-template-columns: repeat(3, 80px);
+    gap: 8px;
+  }
+  
+  .drive-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 1.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-buttons .btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}
