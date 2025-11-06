@@ -286,4 +286,31 @@ body {
   background: #dc2626;
   border-color: #dc2626;
 }
+/* --- Estilos para la lista de Secuencias --- */
+.sequence-steps-display {
+  padding-top: 5px;
+  /* Evita que la lista de badges se haga muy larga */
+  max-height: 50px; 
+  overflow-y: auto;
+}
+
+/* Contenedor para el pad de control y los botones demo */
+.drive-pad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Fila extra para los botones demo */
+.drive-pad-demos {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  max-width: 340px; /* Asegura que coincida con el ancho del pad */
+  justify-content: center;
+}
+
+.drive-pad-demos .drive-btn-demo {
+  flex: 1; /* Hace que ambos botones ocupen el espacio disponible */
+}
 }
