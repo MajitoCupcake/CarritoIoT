@@ -37,14 +37,14 @@
           <h1 class="display-5 fw-bold text-primary mb-3 text-center">Control Manual</h1>
           <div class="drive-pad-container">
             <div class="drive-pad-enhanced">
-  <button class="drive-btn drive-btn-corner" data-move="forward_left">
-    <i class="fas fa-arrow-up-left"></i>
+  <button class="drive-btn drive-btn-corner" data-move="forward_left" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-up-left"></i> ↖️
   </button>
   <button class="drive-btn drive-btn-up" data-move="forward">
     <i class="fas fa-arrow-up"></i>
   </button>
-  <button class="drive-btn drive-btn-corner" data-move="forward_right">
-    <i class="fas fa-arrow-up-right"></i>
+  <button class="drive-btn drive-btn-corner" data-move="forward_right" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-up-right"></i> ↗️
   </button>
 
   <button class="drive-btn drive-btn-left" data-move="rotate_left">
@@ -57,14 +57,22 @@
     <i class="fas fa-redo"></i>
   </button>
 
-  <button class="drive-btn drive-btn-corner" data-move="backward_left">
-    <i class="fas fa-arrow-down-left"></i>
+  <button class="drive-btn drive-btn-corner" data-move="backward_left" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-down-left"></i> ↙️
   </button>
   <button class="drive-btn drive-btn-down" data-move="backward">
     <i class="fas fa-arrow-down"></i>
   </button>
-  <button class="drive-btn drive-btn-corner" data-move="backward_right">
-    <i class="fas fa-arrow-down-right"></i>
+  <button class="drive-btn drive-btn-corner" data-move="backward_right" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-down-right"></i> ↘️
+  </button>
+</div>
+<div class="drive-pad-demos mt-3">
+  <button id="btnDemoL" class="btn btn-outline-primary btn-lg drive-btn-demo" data-move="demo_spin_left">
+    <i class="fas fa-sync-alt me-2"></i>Giro 360° Izquierda
+  </button>
+  <button id="btnDemoR" class="btn btn-outline-primary btn-lg drive-btn-demo" data-move="demo_spin_right">
+    <i class="fas fa-sync-alt me-2"></i>Giro 360° Derecha
   </button>
 </div>
 <div class="drive-pad-demos mt-3">
