@@ -183,7 +183,7 @@ function addWS(txt) {
         <i class="fas fa-broadcast-tower ms-2"></i>
     `;
     wslog.appendChild(div);
-    wslog.scrollTop = log.scrollHeight;
+    wslog.scrollTop = wslog.scrollHeight;
 }
 
 // Función para actualizar la tabla de movimientos
@@ -222,8 +222,8 @@ function updateObstaclesTable(obstacles) {
     if (obstacles && obstacles.length > 0) {
         obstacles.forEach(r => {
             const status = r.status || r.estado || "—";
-            const distance = r.distance_cm || r.distance;
-            const message = r.message || r.mensaje || (status === "OBSTACULO" ? `Obstáculo a ${distance || "?"}cm` : "Camino despejado");
+            const distance = r.distance_cm || r.distance || "?";
+            const message = r.message || r.mensaje || (status === "OBSTACULO" ? `Obstáculo a ${distance}cm` : "Camino despejado");
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><span class="badge ${status === 'OBSTACULO' ? 'bg-danger' : 'bg-success'}">${status}</span></td>
@@ -292,21 +292,28 @@ onWSMessage(msg => {
 // Cargar datos iniciales
 async function loadTables() {
     try {
+        console.log("🔄 Cargando datos iniciales...");
         const [moves, obs] = await Promise.all([getMovements(), getObstacles()]);
+        
+        console.log("Movimientos recibidos:", moves);
+        console.log("Obstáculos recibidos:", obs);
+        
         updateMovementsTable(moves);
         updateObstaclesTable(obs);
-        addWS("✅ Datos iniciales cargados");
+        
+        addWS(`✅ Datos cargados: ${moves?.length || 0} movimientos, ${obs?.length || 0} obstáculos`);
+        
     } catch(e) {
         console.error("Error cargando tablas:", e);
-        addWS("❌ Error cargando datos iniciales: " + e.message);
+        addWS("❌ Error cargando datos: " + e.message);
     }
 }
 
 // Cargar inmediatamente
 loadTables();
 
-// Mantener polling como respaldo (pero ahora las actualizaciones serán instantáneas via WebSocket)
-setInterval(loadTables, 10000); // Reducido a 10 segundos ya que las actualizaciones principales son via push
+// Mantener polling como respaldo
+setInterval(loadTables, 10000);
 
 console.log("🔔 Monitor configurado para notificaciones push");
 </script>
