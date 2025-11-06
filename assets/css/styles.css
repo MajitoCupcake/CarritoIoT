@@ -254,4 +254,36 @@ body {
     width: 100%;
     max-width: 300px;
   }
+  /* --- Colores para Botones de Control --- */
+.drive-btn-up { 
+  color: #10b981; /* Verde */
+}
+.drive-btn-down { 
+  color: #3b82f6; /* Azul */
+}
+.drive-btn-left, 
+.drive-btn-right { 
+  color: #f59e0b; /* Naranja */
+}
+.drive-btn-corner { 
+  color: #8b5cf6; /* Morado */
+}
+
+/* Hover más pronunciado */
+.drive-btn:hover {
+  border-color: #3b82f6;
+  background-color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.drive-btn-stop {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+.drive-btn-stop:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
 }

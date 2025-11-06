@@ -55,13 +55,12 @@ export async function sendObstacle(distanceCm = 15, thresholdCm = 20) {
     });
 }
 
-// --- NUEVAS FUNCIONES DE SECUENCIA ---
+// --- Funciones de Secuencia ---
 export async function getSequences() {
     return handleRequest(`${API_BASE}/sequences`);
 }
 
 export async function saveSequence(name, steps) {
-    // Envía el nombre y la lista de pasos
     return handleRequest(`${API_BASE}/sequences`, {
         method: 'POST',
         body: JSON.stringify({ name, steps })
@@ -69,7 +68,7 @@ export async function saveSequence(name, steps) {
 }
 
 export async function runSequence(name) {
-    // Envía solo el nombre de la secuencia a ejecutar
+    // CORRECCIÓN: Decía API_BASET, ahora dice API_BASE
     return handleRequest(`${API_BASE}/control/run-sequence`, {
         method: 'POST',
         body: JSON.stringify({ name })

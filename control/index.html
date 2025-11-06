@@ -232,13 +232,28 @@
     }
     
     currentSequenceDisplay.innerHTML = currentSequence.map(step => {
+      // Mapeo de iconos (AHORA INCLUYE DEMOS Y OBSTÁCULOS)
       const iconMap = {
         'forward': 'arrow-up', 'backward': 'arrow-down', 'stop': 'stop',
         'rotate_left': 'undo', 'rotate_right': 'redo',
         'forward_left': 'arrow-up-left', 'forward_right': 'arrow-up-right',
-        'backward_left': 'arrow-down-left', 'backward_right': 'arrow-down-right'
+        'backward_left': 'arrow-down-left', 'backward_right': 'arrow-down-right',
+        'demo_spin_left': 'sync-alt',
+        'demo_spin_right': 'sync-alt',
+        'obstacle': 'exclamation-triangle'
       };
-      return `<span class="badge bg-primary p-2 m-1 fs-6"><i class="fas fa-${iconMap[step] || 'question'}"></i> ${step}</span>`;
+      // Mapeo de colores de badge
+      const colorMap = {
+        'demo_spin_left': 'bg-info',
+        'demo_spin_right': 'bg-info',
+        'obstacle': 'bg-warning text-dark',
+        'stop': 'bg-danger'
+      };
+      const badgeColor = colorMap[step] || 'bg-primary';
+
+      return `<span class="badge ${badgeColor} p-2 m-1 fs-6">
+                <i class="fas fa-${iconMap[step] || 'question'}"></i> ${step}
+              </span>`;
     }).join("");
     
     btnSaveSequence.disabled = isRecording;
@@ -284,13 +299,11 @@
     btn.addEventListener("click", async () => {
       const dir = btn.dataset.move;
       
-      // Lógica de grabación
       if (isRecording) {
         currentSequence.push(dir);
         updateSequenceDisplay();
       }
       
-      // Enviar comando (siempre)
       try {
         const res = await sendMove(dir, 70);
         showAlert(res.message);
@@ -339,13 +352,13 @@
       showAlert("Secuencia guardada con éxito");
       currentSequence = [];
       updateSequenceDisplay();
-      loadSavedSequences(); // Recargar la lista
+      loadSavedSequences();
     } catch(e) {
       showAlert(`Error al guardar: ${e.message}`, 'error');
     }
   });
 
-  // Botones de Ejecutar Secuencia (Delegación de eventos)
+  // Botones de Ejecutar Secuencia
   savedSequencesList.addEventListener("click", async (e) => {
     const target = e.target.closest(".btn-run-sequence");
     if (target) {
@@ -360,6 +373,7 @@
         showAlert(res.message);
       } catch (e) {
         showAlert(`Error al ejecutar: ${e.message}`, 'error');
+        addLog(`Error al ejecutar secuencia: ${e.message}`, true);
       } finally {
         target.disabled = false;
         target.innerHTML = `<i class="fas fa-play me-2"></i> Ejecutar`;
@@ -367,8 +381,13 @@
     }
   });
 
-  // Botones de Acciones Especiales
+  // Botones de Acciones Especiales (AHORA GRABAN)
   document.getElementById("btnDemoL").onclick = async () => {
+    const stepName = "demo_spin_left";
+    if (isRecording) {
+      currentSequence.push(stepName);
+      updateSequenceDisplay();
+    }
     try {
       await sendDemo("spin_left", 10);
       showAlert("Demo: Giro 360° Izquierda ejecutada");
@@ -380,6 +399,11 @@
   };
 
   document.getElementById("btnDemoR").onclick = async () => {
+    const stepName = "demo_spin_right";
+    if (isRecording) {
+      currentSequence.push(stepName);
+      updateSequenceDisplay();
+    }
     try {
       await sendDemo("spin_right", 10);
       showAlert("Demo: Giro 360° Derecha ejecutada");
@@ -391,6 +415,11 @@
   };
 
   document.getElementById("btnObstacle").onclick = async () => {
+    const stepName = "obstacle";
+    if (isRecording) {
+      currentSequence.push(stepName);
+      updateSequenceDisplay();
+    }
     try {
       await sendObstacle(15, 20);
       showAlert("Obstáculo simulado a 15cm");
@@ -408,7 +437,7 @@
       addLog(`PUSH (Movimiento): ${msg.movement.movement}`);
     } else if (msg.type === "sequences_updated") {
       showAlert("Lista de secuencias actualizada", 'info');
-      loadSavedSequences(); // Recargar la lista por PUSH
+      loadSavedSequences();
     } else if (msg.type === "sequence_started") {
       addLog(`INICIO SECUENCIA: ${msg.name}`);
     } else if (msg.type === "sequence_finished") {
