@@ -1,9 +1,7 @@
-import { API_BASE } from "./config.js";
+import { API_BASE, WS_URL } from "./config.js";
 
-// Función mejorada para manejar errores
 async function handleRequest(url, options = {}) {
     try {
-        console.log("🌐 Enviando request a:", url);
         const response = await fetch(url, {
             ...options,
             headers: {
@@ -18,7 +16,7 @@ async function handleRequest(url, options = {}) {
         
         return await response.json();
     } catch (error) {
-        console.error("❌ Error en request:", error);
+        console.error("Error en request:", error);
         throw new Error(`No se pudo conectar con el servidor: ${error.message}`);
     }
 }
@@ -27,15 +25,12 @@ async function handleRequest(url, options = {}) {
 export async function getLastMovement() { 
     return handleRequest(`${API_BASE}/telemetry/last-movement`);
 }
-
 export async function getLastObstacle() { 
     return handleRequest(`${API_BASE}/telemetry/last-obstacle`);
 }
-
 export async function getMovements() { 
     return handleRequest(`${API_BASE}/telemetry/movements`);
 }
-
 export async function getObstacles() { 
     return handleRequest(`${API_BASE}/telemetry/obstacles`);
 }
@@ -47,14 +42,12 @@ export async function sendMove(direction, speed = 70, comment = "") {
         body: JSON.stringify({ direction, speed, comment })
     });
 }
-
 export async function sendDemo(name = "spin_left", durationSec = 10) { 
     return handleRequest(`${API_BASE}/control/demo`, {
         method: 'POST',
         body: JSON.stringify({ name, durationSec })
     });
 }
-
 export async function sendObstacle(distanceCm = 15, thresholdCm = 20) { 
     return handleRequest(`${API_BASE}/control/obstacle`, {
         method: 'POST',
@@ -62,8 +55,7 @@ export async function sendObstacle(distanceCm = 15, thresholdCm = 20) {
     });
 }
 
-// (Añadir al final de api.js)
-
+// --- NUEVAS FUNCIONES DE SECUENCIA ---
 export async function getSequences() {
     return handleRequest(`${API_BASE}/sequences`);
 }
@@ -78,7 +70,7 @@ export async function saveSequence(name, steps) {
 
 export async function runSequence(name) {
     // Envía solo el nombre de la secuencia a ejecutar
-    return handleRequest(`${API_BASET}/control/run-sequence`, {
+    return handleRequest(`${API_BASE}/control/run-sequence`, {
         method: 'POST',
         body: JSON.stringify({ name })
     });

@@ -178,7 +178,7 @@
 <script type="module">
   import { API_BASE, WS_URL } from "../assets/js/config.js";
   import { sendMove, sendDemo, sendObstacle, getSequences, saveSequence, runSequence } from "../assets/js/api.js";
-  import { connectWS, onWSMessage, sendWSMessage } from "../assetsjs/ws.js";
+  import { connectWS, onWSMessage, sendWSMessage } from "../assets/js/ws.js";
 
   // --- Estado Global ---
   const log = document.getElementById("log");
@@ -368,9 +368,38 @@
   });
 
   // Botones de Acciones Especiales
-  btnDemoL.onclick = async () => { /* ... (código de demo) ... */ };
-  btnDemoR.onclick = async () => { /* ... (código de demo) ... */ };
-  btnObstacle.onclick = async () => { /* ... (código de demo) ... */ };
+  document.getElementById("btnDemoL").onclick = async () => {
+    try {
+      await sendDemo("spin_left", 10);
+      showAlert("Demo: Giro 360° Izquierda ejecutada");
+      addLog(`Demo "spin_left" ejecutada`);
+    } catch(e) {
+      showAlert(`Error en demo: ${e}`, 'error');
+      addLog(`Error en demo: ${e}`, true);
+    }
+  };
+
+  document.getElementById("btnDemoR").onclick = async () => {
+    try {
+      await sendDemo("spin_right", 10);
+      showAlert("Demo: Giro 360° Derecha ejecutada");
+      addLog(`Demo "spin_right" ejecutada`);
+    } catch(e) {
+      showAlert(`Error en demo: ${e}`, 'error');
+      addLog(`Error en demo: ${e}`, true);
+    }
+  };
+
+  document.getElementById("btnObstacle").onclick = async () => {
+    try {
+      await sendObstacle(15, 20);
+      showAlert("Obstáculo simulado a 15cm");
+      addLog(`Obstáculo simulado a 15cm`);
+    } catch(e) {
+      showAlert(`Error simulando obstáculo: ${e}`, 'error');
+      addLog(`Error en obstáculo: ${e}`, true);
+    }
+  };
 
   // --- WebSocket ---
   connectWS();
