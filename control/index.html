@@ -240,28 +240,42 @@
         addLog(`Velocidad ajustada a ${pct}%`);
     }
 
-    // Se llama desde el Joystick
+// ==========================================================
+    //       FUNCIÓN CORREGIDA: ENVIAR COMANDO (CONTROL MANUAL)
+    // ==========================================================
     function enviarComando(codigo) {
-        // Si estamos grabando, añadir a la secuencia
-        if (isRecording) {
-            currentSequence.push(codigo);
-            actualizarVistaSecuencia();
-        }
+        
+        // Validamos que haya una velocidad
+        if (!velocidadActual) velocidadActual = 70;
 
-        // Enviar al Carrito
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            addLog("Error: WS no conectado", true);
-            return;
-        }
-
+        // Preparamos los datos EXACTAMENTE como Python los pide en 'MoveRequest'
         const payload = {
-            device_id: 1,
-            movement_code: codigo,
-            speed_pct: velocidadActual
+            direction: codigo,        // Python espera 'direction', no 'movement_code'
+            speed_pct: velocidadActual, 
+            comment: "Manual Web"
         };
 
-        socket.send(JSON.stringify({ type: "new_movement", movement: payload }));
-        // addLog(`Enviado: ${codigo}`); // Comentado para no saturar log
+        console.log(`🚀 Enviando HTTP: ${codigo} a ${velocidadActual}%`);
+
+        // Usamos fetch (HTTP POST) en lugar de socket.send
+        // Esto asegura que pase por la lógica de tu Base de Datos y Python haga el Broadcast
+        fetch(`${API_URL}/control/move`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (response.ok) {
+                addLog(`Enviado OK: ${codigo}`);
+            } else {
+                console.error("Error en servidor");
+                addLog("Error enviando comando", true);
+            }
+        })
+        .catch(error => {
+            console.error("Error de red:", error);
+            addLog("Error de Red (API)", true);
+        });
     }
     
     function simularObstaculo() {
