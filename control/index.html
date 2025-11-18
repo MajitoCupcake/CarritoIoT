@@ -3,126 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Carrito IoT</title>
+    <title>Majo IoT Car - Panel Completo</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #eef; padding: 20px; }
-        h1 { color: #333; }
-        
-        /* Estilos para el panel de botones */
-        .control-panel { display: inline-block; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
-        /* Botones de Dirección */
-        .btn-dir { width: 80px; height: 80px; margin: 5px; font-size: 24px; cursor: pointer; border: none; border-radius: 10px; background: #ddd; }
-        .btn-dir:active { background: #bbb; transform: scale(0.95); }
-        .btn-stop { background: #f44336; color: white; }
+        /* --- ESTILOS GENERALES --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
 
-        /* Botones de Velocidad */
-        .speed-panel { margin-top: 20px; padding: 10px; border: 2px solid #ccc; border-radius: 10px; background: #f9f9f9; }
-        .btn-vel { padding: 10px 15px; margin: 0 5px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; color: white; }
-        .vel-low { background-color: #8bc34a; }
-        .vel-med { background-color: #ffc107; color: black; }
-        .vel-high { background-color: #2196F3; }
+        h1 { color: #2c3e50; margin-bottom: 10px; }
         
-        #status { font-weight: bold; color: orange; }
-        .connected { color: green !important; }
-        .disconnected { color: red !important; }
+        /* Contenedor Principal */
+        .main-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Estado de Conexión */
+        .status-bar {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            background-color: #eee;
+        }
+        .connected { color: #27ae60; background-color: #d5f5e3; }
+        .disconnected { color: #c0392b; background-color: #fadbd8; }
+
+        /* --- SECCIÓN 1: CONTROL MANUAL --- */
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 0 auto 20px auto;
+        }
+
+        .btn-dir {
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 15px;
+            padding: 20px 0;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-dir:active { transform: scale(0.95); }
+        .btn-dir:hover { background-color: #d0d0d0; }
+
+        .btn-stop { background-color: #e74c3c; color: white; font-size: 30px; }
+        .btn-stop:hover { background-color: #c0392b; }
+
+        .giros-extra {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .btn-360 {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background-color: #34495e;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* --- SECCIÓN 2: VELOCIDAD --- */
+        .speed-section {
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 30px;
+            background-color: #fafafa;
+        }
+        .btn-vel {
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        .btn-vel:hover { opacity: 0.8; }
+        .vel-low { background-color: #8bc34a; }
+        .vel-med { background-color: #f39c12; }
+        .vel-high { background-color: #3498db; }
+
+        /* --- SECCIÓN 3: CREADOR DE SECUENCIAS --- */
+        .sequence-section {
+            border-top: 3px solid #eee;
+            padding-top: 20px;
+            text-align: left;
+        }
+        .form-group { margin-bottom: 10px; }
+        input, select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .step-list {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            min-height: 50px;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        .step-item {
+            display: inline-block;
+            background: #ddd;
+            padding: 5px 10px;
+            margin: 3px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>🚗 Control IoT Carrito</h1>
-    <p>Estado: <span id="status" class="disconnected">Desconectado</span></p>
+<div class="main-container">
+    <h1>🚗 Majo IoT Car</h1>
+    
+    <div id="status" class="status-bar disconnected">🔴 Desconectado</div>
 
-    <div class="control-panel">
-        <div>
-            <button class="btn-dir" onclick="enviarComando('ADELANTE_IZQUIERDA')">↖️</button>
-            <button class="btn-dir" onclick="enviarComando('ADELANTE')">⬆️</button>
-            <button class="btn-dir" onclick="enviarComando('ADELANTE_DERECHA')">↗️</button>
-        </div>
-        <div>
-            <button class="btn-dir" onclick="enviarComando('GIRO_90_IZQUIERDA')">⬅️</button>
-            <button class="btn-dir btn-stop" onclick="enviarComando('DETENER')">🛑</button>
-            <button class="btn-dir" onclick="enviarComando('GIRO_90_DERECHA')">➡️</button>
-        </div>
-        <div>
-            <button class="btn-dir" onclick="enviarComando('ATRAS_IZQUIERDA')">↙️</button>
-            <button class="btn-dir" onclick="enviarComando('ATRAS')">⬇️</button>
-            <button class="btn-dir" onclick="enviarComando('ATRAS_DERECHA')">↘️</button>
-        </div>
+    <div class="control-grid">
+        <button class="btn-dir" onclick="enviarComando('ADELANTE_IZQUIERDA')">↖️</button>
+        <button class="btn-dir" onclick="enviarComando('ADELANTE')">⬆️</button>
+        <button class="btn-dir" onclick="enviarComando('ADELANTE_DERECHA')">↗️</button>
         
-        <div style="margin-top:10px;">
-            <button class="btn-dir" style="font-size:14px;" onclick="enviarComando('GIRO_360_IZQUIERDA')">🔄 360 I</button>
-            <button class="btn-dir" style="font-size:14px;" onclick="enviarComando('GIRO_360_DERECHA')">🔄 360 D</button>
-        </div>
-
-        <div class="speed-panel">
-            <h3>⚡ Velocidad</h3>
-            <button class="btn-vel vel-low" onclick="setVelocidad(40)">🐢 Baja</button>
-            <button class="btn-vel vel-med" onclick="setVelocidad(60)">🚶 Media</button>
-            <button class="btn-vel vel-high" onclick="setVelocidad(100)">🐇 Alta</button>
-            <p>Modo: <strong id="texto-velocidad" style="color: #333;">MEDIA (60%)</strong></p>
-        </div>
-
+        <button class="btn-dir" onclick="enviarComando('GIRO_90_IZQUIERDA')">⬅️</button>
+        <button class="btn-dir btn-stop" onclick="enviarComando('DETENER')">🛑</button>
+        <button class="btn-dir" onclick="enviarComando('GIRO_90_DERECHA')">➡️</button>
+        
+        <button class="btn-dir" onclick="enviarComando('ATRAS_IZQUIERDA')">↙️</button>
+        <button class="btn-dir" onclick="enviarComando('ATRAS')">⬇️</button>
+        <button class="btn-dir" onclick="enviarComando('ATRAS_DERECHA')">↘️</button>
     </div>
 
-    <script>
-        // --- CONFIGURACIÓN ---
-        const WS_URL = "ws://18.207.21.168:5500/ws"; // Revisa si es /ws o /api/ws
-        let socket;
-        let velocidadActual = 60; // Velocidad por defecto
+    <div class="giros-extra">
+        <button class="btn-360" onclick="enviarComando('GIRO_360_IZQUIERDA')">🔄 360° I</button>
+        <button class="btn-360" onclick="enviarComando('GIRO_360_DERECHA')">🔄 360° D</button>
+    </div>
 
-        // --- CONEXIÓN WEBSOCKET ---
-        function conectarWebSocket() {
-            console.log("Conectando...");
-            socket = new WebSocket(WS_URL);
+    <div class="speed-section">
+        <h3>⚡ Velocidad</h3>
+        <button class="btn-vel vel-low" onclick="setVelocidad(40)">🐢 Baja</button>
+        <button class="btn-vel vel-med" onclick="setVelocidad(60)">🚶 Media</button>
+        <button class="btn-vel vel-high" onclick="setVelocidad(100)">🐇 Alta</button>
+        
+        <p style="margin-top:10px;">Modo: <strong id="texto-velocidad" style="color: #f39c12;">MEDIA (60%)</strong></p>
+    </div>
 
-            socket.onopen = function() {
-                document.getElementById("status").innerText = "🟢 Conectado";
-                document.getElementById("status").className = "connected";
-                console.log("WS Conectado");
-            };
+    <div class="sequence-section">
+        <h3>🎬 Crear Secuencia</h3>
+        
+        <div class="form-group">
+            <input type="text" id="secuenciaNombre" placeholder="Nombre de la secuencia (ej: Patrulla)">
+        </div>
+        
+        <div class="form-group">
+            <select id="pasoSelect">
+                <option value="ADELANTE">Adelante</option>
+                <option value="ATRAS">Atrás</option>
+                <option value="GIRO_90_DERECHA">Giro 90° Derecha</option>
+                <option value="GIRO_90_IZQUIERDA">Giro 90° Izquierda</option>
+                <option value="GIRO_360_DERECHA">Giro 360°</option>
+                <option value="obstacle">Detectar Obstáculo</option>
+            </select>
+        </div>
 
-            socket.onclose = function() {
-                document.getElementById("status").innerText = "🔴 Desconectado";
-                document.getElementById("status").className = "disconnected";
-                console.log("WS Desconectado. Reintentando en 3s...");
-                setTimeout(conectarWebSocket, 3000);
-            };
+        <button onclick="agregarPaso()" style="background:#34495e; color:white; padding:8px; width:100%; border:none; border-radius:5px; cursor:pointer;">➕ Agregar Paso</button>
 
-            socket.onerror = function(error) {
-                console.error("Error WS:", error);
-            };
+        <div id="listaPasos" class="step-list">
+            <span style="color:#999; font-size:12px;">(Sin pasos agregados)</span>
+        </div>
+
+        <button class="btn-action" onclick="guardarSecuenciaEnBD()">💾 GUARDAR SECUENCIA</button>
+    </div>
+
+</div>
+
+<script>
+    // ---------------- CONFIGURACIÓN ----------------
+    // REEMPLAZA ESTO CON LA IP DE TU EC2 / PYTHON
+    const HOST_IP = "18.207.21.168"; 
+    const WS_PORT = "5500";
+    
+    // URLs
+    const WS_URL = `ws://${HOST_IP}:${WS_PORT}/ws`; // OJO: Si es /api/ws cámbialo aquí
+    const API_URL = `http://${HOST_IP}:${WS_PORT}/api/sequences`;
+
+    let socket;
+    let velocidadActual = 60; // Valor por defecto
+    let pasosActuales = [];   // Lista temporal de pasos para la secuencia
+
+    // ---------------- 1. WEBSOCKET ----------------
+    function conectarWebSocket() {
+        console.log("Intentando conectar a:", WS_URL);
+        socket = new WebSocket(WS_URL);
+
+        socket.onopen = function() {
+            document.getElementById("status").innerText = "🟢 Conectado";
+            document.getElementById("status").className = "status-bar connected";
+            console.log("WS Conectado");
+        };
+
+        socket.onclose = function() {
+            document.getElementById("status").innerText = "🔴 Desconectado";
+            document.getElementById("status").className = "status-bar disconnected";
+            console.log("WS Cerrado. Reintentando...");
+            setTimeout(conectarWebSocket, 3000);
+        };
+
+        socket.onerror = function(error) {
+            console.error("WS Error:", error);
+        };
+    }
+
+    // ---------------- 2. CONTROL MANUAL Y VELOCIDAD ----------------
+    function setVelocidad(porcentaje) {
+        velocidadActual = porcentaje;
+        
+        let texto = "MEDIA";
+        let color = "#f39c12";
+        
+        if (porcentaje <= 45) { texto = "BAJA"; color = "#8bc34a"; }
+        if (porcentaje >= 80) { texto = "ALTA"; color = "#3498db"; }
+
+        const label = document.getElementById("texto-velocidad");
+        label.innerText = `${texto} (${porcentaje}%)`;
+        label.style.color = color;
+    }
+
+    function enviarComando(codigo) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            alert("⚠️ No estás conectado al carrito.");
+            return;
         }
 
-        // --- FUNCIÓN DE VELOCIDAD ---
-        function setVelocidad(porcentaje) {
-            velocidadActual = porcentaje;
-            let texto = "MEDIA";
-            if(porcentaje <= 45) texto = "BAJA";
-            if(porcentaje >= 80) texto = "ALTA";
-            document.getElementById("texto-velocidad").innerText = `${texto} (${porcentaje}%)`;
+        const payload = {
+            "device_id": 1,
+            "movement_code": codigo,
+            "speed_pct": velocidadActual // ¡Aquí se va la velocidad!
+        };
+
+        socket.send(JSON.stringify({
+            "type": "new_movement",
+            "movement": payload
+        }));
+        console.log(`Enviado: ${codigo} a ${velocidadActual}%`);
+    }
+
+    // ---------------- 3. GESTIÓN DE SECUENCIAS ----------------
+    function agregarPaso() {
+        const select = document.getElementById("pasoSelect");
+        const pasoCodigo = select.value;
+        const pasoTexto = select.options[select.selectedIndex].text;
+
+        pasosActuales.push(pasoCodigo);
+        actualizarVisualizacionPasos();
+    }
+
+    function actualizarVisualizacionPasos() {
+        const contenedor = document.getElementById("listaPasos");
+        contenedor.innerHTML = ""; // Limpiar
+
+        if (pasosActuales.length === 0) {
+            contenedor.innerHTML = '<span style="color:#999; font-size:12px;">(Sin pasos agregados)</span>';
+            return;
         }
 
-        // --- ENVIAR COMANDO ---
-        function enviarComando(codigo) {
-            if (!socket || socket.readyState !== WebSocket.OPEN) return;
+        pasosActuales.forEach((paso, index) => {
+            const div = document.createElement("span");
+            div.className = "step-item";
+            div.innerText = `${index + 1}. ${paso}`;
+            contenedor.appendChild(div);
+        });
+    }
 
-            const payload = {
-                "device_id": 1,
-                "movement_code": codigo,
-                "speed_pct": velocidadActual // <--- AQUÍ SE MANDA LA VELOCIDAD
-            };
-
-            socket.send(JSON.stringify({
-                "type": "new_movement",
-                "movement": payload
-            }));
-            console.log(`Enviado: ${codigo} | Vel: ${velocidadActual}%`);
+    function guardarSecuenciaEnBD() {
+        const nombre = document.getElementById("secuenciaNombre").value;
+        
+        if (!nombre || pasosActuales.length === 0) {
+            alert("❌ Escribe un nombre y agrega al menos un paso.");
+            return;
         }
 
-        // Iniciar conexión al cargar
-        conectarWebSocket();
-    </script>
+        // Enviar a la API (Python)
+        fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: nombre,
+                steps: pasosActuales
+            })
+        })
+        .then(response => {
+            if(response.ok) return response.json();
+            throw new Error("Error en la petición");
+        })
+        .then(data => {
+            alert("✅ Secuencia Guardada Exitosamente");
+            pasosActuales = [];
+            document.getElementById("secuenciaNombre").value = "";
+            actualizarVisualizacionPasos();
+        })
+        .catch(error => {
+            console.error(error);
+            alert("❌ Error al guardar (Revisa la consola / Mixed Content)");
+        });
+    }
+
+    // INICIAR
+    conectarWebSocket();
+
+</script>
 
 </body>
 </html>
