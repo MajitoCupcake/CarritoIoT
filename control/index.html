@@ -1,128 +1,512 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Carrito IoT</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #eef; padding: 20px; }
-        h1 { color: #333; }
-        
-        /* Estilos para el panel de botones */
-        .control-panel { display: inline-block; background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
-        /* Botones de Dirección */
-        .btn-dir { width: 80px; height: 80px; margin: 5px; font-size: 24px; cursor: pointer; border: none; border-radius: 10px; background: #ddd; }
-        .btn-dir:active { background: #bbb; transform: scale(0.95); }
-        .btn-stop { background: #f44336; color: white; }
-
-        /* Botones de Velocidad */
-        .speed-panel { margin-top: 20px; padding: 10px; border: 2px solid #ccc; border-radius: 10px; background: #f9f9f9; }
-        .btn-vel { padding: 10px 15px; margin: 0 5px; cursor: pointer; border: none; border-radius: 5px; font-weight: bold; color: white; }
-        .vel-low { background-color: #8bc34a; }
-        .vel-med { background-color: #ffc107; color: black; }
-        .vel-high { background-color: #2196F3; }
-        
-        #status { font-weight: bold; color: orange; }
-        .connected { color: green !important; }
-        .disconnected { color: red !important; }
-    </style>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>IoT Cart Manager · Control</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/styles.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
+<nav class="navbar navbar-light bg-white border-bottom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold fs-3" href="../">
+      <i class="fas fa-robot text-primary me-2"></i>IoT Cart Manager
+    </a>
+    <div class="d-flex align-items-center gap-2">
+      <a class="btn btn-outline-primary" href="../">
+        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+      </a>
+      <a class="btn btn-primary active" href="./">
+        <i class="fas fa-gamepad me-1"></i>Control
+      </a>
+      <a class="btn btn-outline-primary" href="../monitor/">
+        <i class="fas fa-satellite-dish me-1"></i>Monitoreo
+      </a>
+    </div>
+  </div>
+</nav>
 
-    <h1>🚗 Control IoT Carrito</h1>
-    <p>Estado: <span id="status" class="disconnected">Desconectado</span></p>
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      
+      <div class="card control-card shadow-lg border-0 mb-4">
+        <div class="card-body p-4">
+          <h1 class="display-5 fw-bold text-primary mb-3 text-center">Control Manual</h1>
+          <div class="drive-pad-container">
 
-    <div class="control-panel">
-        <div>
-            <button class="btn-dir" onclick="enviarComando('ADELANTE_IZQUIERDA')">↖️</button>
-            <button class="btn-dir" onclick="enviarComando('ADELANTE')">⬆️</button>
-            <button class="btn-dir" onclick="enviarComando('ADELANTE_DERECHA')">↗️</button>
-        </div>
-        <div>
-            <button class="btn-dir" onclick="enviarComando('GIRO_90_IZQUIERDA')">⬅️</button>
-            <button class="btn-dir btn-stop" onclick="enviarComando('DETENER')">🛑</button>
-            <button class="btn-dir" onclick="enviarComando('GIRO_90_DERECHA')">➡️</button>
-        </div>
-        <div>
-            <button class="btn-dir" onclick="enviarComando('ATRAS_IZQUIERDA')">↙️</button>
-            <button class="btn-dir" onclick="enviarComando('ATRAS')">⬇️</button>
-            <button class="btn-dir" onclick="enviarComando('ATRAS_DERECHA')">↘️</button>
-        </div>
-        
-        <div style="margin-top:10px;">
-            <button class="btn-dir" style="font-size:14px;" onclick="enviarComando('GIRO_360_IZQUIERDA')">🔄 360 I</button>
-            <button class="btn-dir" style="font-size:14px;" onclick="enviarComando('GIRO_360_DERECHA')">🔄 360 D</button>
-        </div>
+            <div class="drive-pad-enhanced">
+  <button class="drive-btn drive-btn-corner" data-move="forward_left" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-up-left"></i> ↖️
+  </button>
+  <button class="drive-btn drive-btn-up" data-move="forward">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  <button class="drive-btn drive-btn-corner" data-move="forward_right" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-up-right"></i> ↗️
+  </button>
 
-        <div class="speed-panel">
-            <h3>⚡ Velocidad</h3>
-            <button class="btn-vel vel-low" onclick="setVelocidad(40)">🐢 Baja</button>
-            <button class="btn-vel vel-med" onclick="setVelocidad(60)">🚶 Media</button>
-            <button class="btn-vel vel-high" onclick="setVelocidad(100)">🐇 Alta</button>
-            <p>Modo: <strong id="texto-velocidad" style="color: #333;">MEDIA (60%)</strong></p>
+  <button class="drive-btn drive-btn-left" data-move="rotate_left">
+    <i class="fas fa-undo"></i>
+  </button>
+  <button class="drive-btn drive-btn-stop" data-move="stop">
+    <i class="fas fa-stop"></i>
+  </button>
+  <button class="drive-btn drive-btn-right" data-move="rotate_right">
+    <i class="fas fa-redo"></i>
+  </button>
+
+  <button class="drive-btn drive-btn-corner" data-move="backward_left" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-down-left"></i> ↙️
+  </button>
+  <button class="drive-btn drive-btn-down" data-move="backward">
+    <i class="fas fa-arrow-down"></i>
+  </button>
+  <button class="drive-btn drive-btn-corner" data-move="backward_right" style="background-color: #8b5cf6; color: white;">
+    <i class="fas fa-arrow-down-right"></i> ↘️
+  </button>
+</div>
+            <div class="drive-pad-demos mt-3">
+              <button id="btnDemoL" class="btn btn-outline-primary btn-lg drive-btn-demo" data-move="demo_spin_left">
+                <i class="fas fa-sync-alt me-2"></i>Giro 360° Izquierda
+              </button>
+              <button id="btnDemoR" class="btn btn-outline-primary btn-lg drive-btn-demo" data-move="demo_spin_right">
+                <i class="fas fa-sync-alt me-2"></i>Giro 360° Derecha
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+<div style="border: 2px solid #333; padding: 10px; margin: 10px 0; border-radius: 10px; text-align: center; background-color: #f0f0f0;">
+    <h3>🚀 Control de Velocidad</h3>
+    
+    <button onclick="setVelocidad(40)" style="background: #8bc34a; padding: 10px; cursor: pointer;">
+        🐢 LENTO
+    </button>
+    
+    <button onclick="setVelocidad(60)" style="background: #ffc107; padding: 10px; cursor: pointer;">
+        🚶 NORMAL
+    </button>
+    
+    <button onclick="setVelocidad(100)" style="background: #f44336; color: white; padding: 10px; cursor: pointer;">
+        🐇 RÁPIDO
+    </button>
+
+    <p>Velocidad actual: <strong id="velocidad-texto" style="color: blue;">NORMAL (60%)</strong></p>
+</div>
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-list-ol me-2"></i>Secuencias Guardadas
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush" id="saved-sequences-list">
+            <div class="list-group-item text-center p-4">
+              <i class="fas fa-spinner fa-spin me-2"></i>Cargando secuencias...
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
 
-    <script>
-        // --- CONFIGURACIÓN ---
-        const WS_URL = "ws://18.207.21.168:5500/ws"; // Revisa si es /ws o /api/ws
-        let socket;
-        let velocidadActual = 60; // Velocidad por defecto
+    <div class="col-lg-5">
+      
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-success text-white">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-magic-wand-sparkles me-2"></i>Creador de Secuencias
+          </h5>
+        </div>
+        <div class="card-body text-center">
+          <button id="btn-record" class="btn btn-danger btn-lg w-100">
+            <i class="fas fa-circle me-2"></i> Iniciar Grabación
+          </button>
+          <button id="btn-stop-record" class="btn btn-secondary btn-lg w-100 d-none">
+            <i class="fas fa-stop-circle me-2"></i> Detener Grabación
+          </button>
 
-        // --- CONEXIÓN WEBSOCKET ---
-        function conectarWebSocket() {
-            console.log("Conectando...");
-            socket = new WebSocket(WS_URL);
+          <hr>
 
-            socket.onopen = function() {
-                document.getElementById("status").innerText = "🟢 Conectado";
-                document.getElementById("status").className = "connected";
-                console.log("WS Conectado");
+          <h6 class="text-muted text-start">Secuencia Actual:</h6>
+          <div class="sequence-display" id="current-sequence-display">
+            <span class="text-muted fst-italic">Presiona "Iniciar Grabación"</span>
+          </div>
+
+          <div class="d-grid gap-2 mt-3">
+            <button id="btn-save-sequence" class="btn btn-primary" disabled>
+              <i class="fas fa-save me-2"></i> Guardar Secuencia
+            </button>
+            <button id="btn-clear-sequence" class="btn btn-outline-danger" disabled>
+              <i class="fas fa-trash me-2"></i> Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-terminal me-2"></i>Registro de Comandos
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="log-enhanced" id="log"></div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-info text-white">
+          <h5 class="card-title mb-0 fs-4">
+            <i class="fas fa-cogs me-2"></i>Acciones Especiales
+          </h5>
+        </div>
+        <div class="card-body d-grid gap-2">
+            <button id="btnObstacle" class="btn btn-outline-warning btn-lg" data-move="obstacle">
+              <i class="fas fa-exclamation-triangle me-2"></i>Simular Obstáculo
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer mt-5 py-4 bg-light border-top">
+  </footer>
+
+<script type="module">
+  import { API_BASE, WS_URL } from "../assets/js/config.js";
+  import { sendMove, sendDemo, sendObstacle, getSequences, saveSequence, runSequence } from "../assets/js/api.js";
+  import { connectWS, onWSMessage, sendWSMessage } from "../assets/js/ws.js";
+
+  // --- Estado Global ---
+  const log = document.getElementById("log");
+  let isRecording = false;
+  let currentSequence = [];
+
+  // --- Elementos del DOM ---
+  const btnRecord = document.getElementById("btn-record");
+  const btnStopRecord = document.getElementById("btn-stop-record");
+  const btnSaveSequence = document.getElementById("btn-save-sequence");
+  const btnClearSequence = document.getElementById("btn-clear-sequence");
+  const currentSequenceDisplay = document.getElementById("current-sequence-display");
+  const savedSequencesList = document.getElementById("saved-sequences-list");
+
+  // --- Funciones de UI ---
+  
+  function showAlert(message, type = 'success') {
+    const alertClass = type === 'error' ? 'alert-danger' : (type === 'info' ? 'alert-info' : 'alert-success');
+    const alertDiv = document.createElement('div');
+    // ... (código de showAlert sigue igual) ...
+    alertDiv.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+      <strong>${type === 'error' ? 'Error!' : (type === 'info' ? 'Info:' : 'Éxito!')}</strong> ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => { if (alertDiv.parentNode) alertDiv.remove(); }, 3000);
+  }
+
+  function addLog(txt, err = false) {
+    const line = document.createElement("div");
+    // ... (código de addLog sigue igual) ...
+    const stamp = new Date().toLocaleTimeString();
+    line.className = `log-line ${err ? 'log-error' : 'log-success'}`;
+    line.innerHTML = `
+      <span class="log-time">[${stamp}]</span>
+      <span class="log-message">${txt}</span>
+      ${err ? '<i class="fas fa-exclamation-triangle ms-2"></i>' : '<i class="fas fa-check-circle ms-2"></i>'}
+    `;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // --- Lógica de Secuencias ---
+
+  function updateSequenceDisplay() {
+    if (currentSequence.length === 0) {
+      currentSequenceDisplay.innerHTML = `<span class="text-muted fst-italic">${isRecording ? 'Presiona los controles...' : 'Secuencia vacía'}</span>`;
+      btnSaveSequence.disabled = true;
+      btnClearSequence.disabled = true;
+      return;
+    }
+    
+    currentSequenceDisplay.innerHTML = currentSequence.map(step => {
+      const iconMap = {
+        'forward': 'arrow-up', 'backward': 'arrow-down', 'stop': 'stop',
+        'rotate_left': 'undo', 'rotate_right': 'redo',
+        'forward_left': 'arrow-up-left', 'forward_right': 'arrow-up-right',
+        'backward_left': 'arrow-down-left', 'backward_right': 'arrow-down-right',
+        'demo_spin_left': 'sync-alt',
+        'demo_spin_right': 'sync-alt',
+        'obstacle': 'exclamation-triangle'
+      };
+      const colorMap = {
+        'demo_spin_left': 'bg-info',
+        'demo_spin_right': 'bg-info',
+        'obstacle': 'bg-warning text-dark',
+        'stop': 'bg-danger'
+      };
+      const badgeColor = colorMap[step] || 'bg-primary';
+
+      return `<span class="badge ${badgeColor} p-2 m-1 fs-6">
+                <i class="fas fa-${iconMap[step] || 'question'}"></i> ${step}
+              </span>`;
+    }).join("");
+    
+    btnSaveSequence.disabled = isRecording;
+    btnClearSequence.disabled = isRecording;
+  }
+
+  // SOLUCIÓN 2: Mostrar los pasos en la lista
+  async function loadSavedSequences() {
+    try {
+      const sequences = await getSequences();
+      savedSequencesList.innerHTML = "";
+      
+      if (!sequences || sequences.length === 0) {
+        savedSequencesList.innerHTML = `<div class="list-group-item text-center p-4 text-muted">No hay secuencias guardadas.</div>`;
+        return;
+      }
+      
+      sequences.forEach(seq => {
+        const item = document.createElement("a");
+        item.href = "#";
+        item.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
+        
+        // --- INICIO DE LA MODIFICACIÓN ---
+        // Crear badges para cada paso
+        const stepsHtml = seq.steps.map(step => {
+            const iconMap = {
+              'forward': 'arrow-up', 'backward': 'arrow-down', 'stop': 'stop',
+              'rotate_left': 'undo', 'rotate_right': 'redo',
+              'demo_spin_left': 'sync-alt', 'demo_spin_right': 'sync-alt',
+              'obstacle': 'exclamation-triangle'
             };
-
-            socket.onclose = function() {
-                document.getElementById("status").innerText = "🔴 Desconectado";
-                document.getElementById("status").className = "disconnected";
-                console.log("WS Desconectado. Reintentando en 3s...");
-                setTimeout(conectarWebSocket, 3000);
+            const colorMap = {
+              'demo_spin_left': 'bg-info', 'demo_spin_right': 'bg-info',
+              'obstacle': 'bg-warning text-dark', 'stop': 'bg-danger'
             };
+            const badgeColor = colorMap[step] || 'bg-primary';
+            // Usamos 'fa-xs' (extra small) para que quepan más
+            return `<span class="badge ${badgeColor} m-1"><i class="fas fa-${iconMap[step] || 'question'} fa-xs"></i></span>`;
+        }).join(" ");
 
-            socket.onerror = function(error) {
-                console.error("Error WS:", error);
-            };
-        }
+        item.innerHTML = `
+          <div>
+            <strong class="fs-5">${seq.name}</strong>
+            <div class="small text-muted">${seq.steps.length} pasos</div>
+            <div class="sequence-steps-display mt-2">
+              ${stepsHtml}
+            </div>
+          </div>
+          <button class="btn btn-success btn-run-sequence" data-name="${seq.name}">
+            <i class="fas fa-play me-2"></i> Ejecutar
+          </button>
+        `;
+        // --- FIN DE LA MODIFICACIÓN ---
+        
+        savedSequencesList.appendChild(item);
+      });
 
-        // --- FUNCIÓN DE VELOCIDAD ---
-        function setVelocidad(porcentaje) {
-            velocidadActual = porcentaje;
-            let texto = "MEDIA";
-            if(porcentaje <= 45) texto = "BAJA";
-            if(porcentaje >= 80) texto = "ALTA";
-            document.getElementById("texto-velocidad").innerText = `${texto} (${porcentaje}%)`;
-        }
+    } catch (e) {
+      savedSequencesList.innerHTML = `<div class="list-group-item text-center p-4 text-danger">Error al cargar secuencias.</div>`;
+      showAlert(`Error cargando secuencias: ${e.message}`, 'error');
+    }
+  }
+  // --- VARIABLE GLOBAL DE VELOCIDAD (Por defecto 60%) ---
+let velocidadActual = 60; 
 
-        // --- ENVIAR COMANDO ---
-        function enviarComando(codigo) {
-            if (!socket || socket.readyState !== WebSocket.OPEN) return;
+// 1. Función para cambiar la velocidad (conectada a los botones)
+function setVelocidad(porcentaje) {
+    velocidadActual = porcentaje;
+    
+    // Actualizar texto en pantalla
+    let etiqueta = "NORMAL";
+    if(porcentaje <= 45) etiqueta = "LENTO";
+    if(porcentaje >= 80) etiqueta = "RÁPIDO";
+    
+    document.getElementById("velocidad-texto").innerText = `${etiqueta} (${porcentaje}%)`;
+    console.log("Nueva velocidad establecida:", velocidadActual);
+}
 
-            const payload = {
-                "device_id": 1,
-                "movement_code": codigo,
-                "speed_pct": velocidadActual // <--- AQUÍ SE MANDA LA VELOCIDAD
-            };
+// 2. Función MODIFICADA para enviar comandos (Busca la tuya y actualízala)
+// Esta función es la que se llama cuando presionas "Adelante", "Atrás", etc.
+function enviarComando(codigoMovimiento) {
+    
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error("WebSocket no conectado.");
+        return;
+    }
 
-            socket.send(JSON.stringify({
-                "type": "new_movement",
-                "movement": payload
-            }));
-            console.log(`Enviado: ${codigo} | Vel: ${velocidadActual}%`);
-        }
+    // El Payload ahora incluye 'speed_pct'
+    const payload = {
+        "device_id": 1, // O el ID que uses
+        "movement_code": codigoMovimiento,
+        "speed_pct": velocidadActual // <--- ¡AQUÍ SE ENVÍA LA VELOCIDAD!
+    };
 
-        // Iniciar conexión al cargar
-        conectarWebSocket();
-    </script>
+    // Enviar al servidor (Backend -> Arduino)
+    socket.send(JSON.stringify({
+        "type": "new_movement",
+        "movement": payload
+    }));
+    
+    console.log("Enviado:", codigoMovimiento, "a velocidad:", velocidadActual);
+}
 
+  // --- Event Listeners ---
+
+  // Botones de Control (9 botones)
+  document.querySelectorAll(".drive-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const dir = btn.dataset.move;
+      
+      if (isRecording) {
+        currentSequence.push(dir);
+        updateSequenceDisplay();
+      }
+      
+      try {
+        const res = await sendMove(dir, 70);
+        showAlert(res.message);
+        addLog(res.message);
+        sendWSMessage({ type: "movement", direction: dir });
+      } catch(e) {
+        showAlert(`Error: ${e.message}`, 'error');
+        addLog(`Error en "${dir}": ${e}`, true);
+      }
+    });
+  });
+
+  // Botones de Demo (2 botones) - AHORA PARTE DEL CONTROL
+  document.querySelectorAll(".drive-btn-demo").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const stepName = btn.dataset.move; // "demo_spin_left" o "demo_spin_right"
+      const apiName = stepName.replace("demo_", ""); // "spin_left" o "spin_right"
+
+      if (isRecording) {
+        currentSequence.push(stepName);
+        updateSequenceDisplay();
+      }
+      
+      try {
+        await sendDemo(apiName, 10);
+        showAlert(`Demo: ${apiName} ejecutada`);
+        addLog(`Demo "${apiName}" ejecutada`);
+      } catch(e) {
+        showAlert(`Error en demo: ${e.message}`, 'error');
+        addLog(`Error en demo: ${e.message}`, true);
+      }
+    });
+  });
+
+  // Botón de Obstáculo (1 botón) - AHORA PARTE DE ACCIONES
+  document.getElementById("btnObstacle").onclick = async () => {
+    const stepName = "obstacle";
+    if (isRecording) {
+      currentSequence.push(stepName);
+      updateSequenceDisplay();
+    }
+    try {
+      await sendObstacle(15, 20);
+      showAlert("Obstáculo simulado a 15cm");
+      addLog(`Obstáculo simulado a 15cm`);
+    } catch(e) {
+      showAlert(`Error simulando obstáculo: ${e}`, 'error');
+      addLog(`Error en obstáculo: ${e}`, true);
+    }
+  };
+
+  // Botones de Grabación
+  btnRecord.addEventListener("click", () => {
+    isRecording = true;
+    currentSequence = [];
+    updateSequenceDisplay();
+    btnRecord.classList.add("d-none");
+    btnStopRecord.classList.remove("d-none");
+    showAlert("Grabación iniciada", 'info');
+  });
+
+  btnStopRecord.addEventListener("click", () => {
+    isRecording = false;
+    updateSequenceDisplay();
+    btnRecord.classList.remove("d-none");
+    btnStopRecord.classList.add("d-none");
+    showAlert("Grabación detenida", 'info');
+  });
+
+  btnClearSequence.addEventListener("click", () => {
+    currentSequence = [];
+    updateSequenceDisplay();
+    showAlert("Secuencia limpiada", 'info');
+  });
+
+  btnSaveSequence.addEventListener("click", async () => {
+    const name = prompt("Ingresa un nombre para la secuencia:", "Mi Secuencia");
+    if (!name || name.trim() === "") {
+      showAlert("Guardado cancelado", 'info');
+      return;
+    }
+    
+    try {
+      await saveSequence(name, currentSequence);
+      showAlert("Secuencia guardada con éxito");
+      currentSequence = [];
+      updateSequenceDisplay();
+      loadSavedSequences();
+    } catch(e) {
+      showAlert(`Error al guardar: ${e.message}`, 'error');
+    }
+  });
+
+  // Botones de Ejecutar Secuencia
+  savedSequencesList.addEventListener("click", async (e) => {
+    const target = e.target.closest(".btn-run-sequence");
+    if (target) {
+      e.preventDefault();
+      const name = target.dataset.name;
+      target.disabled = true;
+      target.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i> Ejecutando...`;
+      
+      showAlert(`Ejecutando secuencia: ${name}`, 'info');
+      try {
+        const res = await runSequence(name);
+        showAlert(res.message);
+      } catch (e) {
+        showAlert(`Error al ejecutar: ${e.message}`, 'error');
+        addLog(`Error al ejecutar secuencia: ${e.message}`, true);
+      } finally {
+        target.disabled = false;
+        target.innerHTML = `<i class="fas fa-play me-2"></i> Ejecutar`;
+      }
+    }
+  });
+
+  // --- WebSocket ---
+  connectWS();
+  onWSMessage(msg => {
+    if (msg.type === "new_movement") {
+      addLog(`PUSH (Movimiento): ${msg.movement.movement}`);
+    } else if (msg.type === "sequences_updated") {
+      showAlert("Lista de secuencias actualizada", 'info');
+      loadSavedSequences();
+    } else if (msg.type === "sequence_started") {
+      addLog(`INICIO SECUENCIA: ${msg.name}`);
+    } else if (msg.type === "sequence_finished") {
+      addLog(`FIN SECUENCIA: ${msg.name}`);
+    }
+  });
+
+  // --- Inicialización ---
+  updateSequenceDisplay();
+  loadSavedSequences();
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
