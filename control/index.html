@@ -59,20 +59,29 @@
     </div>
   </div>
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold fs-3" href="#">
+    
+    <a class="navbar-brand fw-bold fs-3" href="../">
       <i class="fas fa-robot text-primary me-2"></i>IoT Cart Manager
     </a>
+
     <div class="d-flex align-items-center gap-2">
-      <a class="btn btn-primary active" href="./">
+      
+      <a class="btn btn-outline-primary" href="../">
         <i class="fas fa-tachometer-alt me-1"></i>Dashboard
       </a>
-      <a class="btn btn-outline-primary" href="./control/">
+      
+      <a class="btn btn-primary active" href="#">
         <i class="fas fa-gamepad me-1"></i>Control
       </a>
-      <a class="btn btn-outline-primary" href="./monitor/">
+      
+      <a class="btn btn-outline-primary" href="../monitor/">
         <i class="fas fa-satellite-dish me-1"></i>Monitoreo
       </a>
+      
+      <span id="connection-status" class="badge bg-danger ms-3">Desconectado</span>
     </div>
+
+  </div>
   </div>
 </nav>
 
