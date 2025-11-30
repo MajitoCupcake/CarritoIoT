@@ -434,8 +434,15 @@
     function addLog(msg, isError = false) {
         const logDiv = document.getElementById("log");
         const time = new Date().toLocaleTimeString();
-        const color = isError ? "text-danger" : "text-success";
-        logDiv.innerHTML += `<div class="log-line"><span class="text-muted">[${time}]</span> <span class="${color}">${msg}</span></div>`;
+        const color = isError ? "text-danger" : "text-success"; // Rojo o Verde para el mensaje
+        
+        // CORRECCIÓN AQUÍ: Usamos 'log-time' en vez de 'text-muted'
+        logDiv.innerHTML += `
+            <div class="log-line">
+                <span class="log-time">[${time}]</span> 
+                <span class="${color}">${msg}</span>
+            </div>
+        `;
         logDiv.scrollTop = logDiv.scrollHeight;
     }
 
