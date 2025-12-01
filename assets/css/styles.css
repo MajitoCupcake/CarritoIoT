@@ -121,11 +121,9 @@ body {
   gap: 0.5rem;
 }
 
-.log-time { 
-    color: #ffffff !important;  /* Blanco puro */
-    margin-right: 8px;
-    font-weight: bold;          /* Un poco más gordita para que se lea mejor */
-    opacity: 0.8;               /* Opcional: Un poquito de transparencia para que no lastime */
+.log-time {
+  color: #ffffff;
+  font-size: 0.8rem;
 }
 
 .log-success { color: #198754; }
