@@ -507,18 +507,31 @@
 
     // ================= UTILIDADES =================
     function addLog(msg, isError = false) {
+<<<<<<< HEAD
       const logDiv = document.getElementById("log");
       const time = new Date().toLocaleTimeString();
       const color = isError ? "text-danger" : "text-success"; // Rojo o Verde para el mensaje
 
       // CORRECCIÓN AQUÍ: Usamos 'log-time' en vez de 'text-muted'
       logDiv.innerHTML += `
+=======
+        const logDiv = document.getElementById("log");
+        const time = new Date().toLocaleTimeString();
+        const color = isError ? "text-danger" : "text-success"; // Rojo o Verde para el mensaje
+        
+        // CORRECCIÓN AQUÍ: Usamos 'log-time' en vez de 'text-muted'
+        logDiv.innerHTML += `
+>>>>>>> 21bdeca10e3b928b97984a320c14dbada099429b
             <div class="log-line">
                 <span class="log-time">[${time}]</span> 
                 <span class="${color}">${msg}</span>
             </div>
         `;
+<<<<<<< HEAD
       logDiv.scrollTop = logDiv.scrollHeight;
+=======
+        logDiv.scrollTop = logDiv.scrollHeight;
+>>>>>>> 21bdeca10e3b928b97984a320c14dbada099429b
     }
 
     // INICIAR
