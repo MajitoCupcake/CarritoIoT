@@ -1,543 +1,435 @@
 <!doctype html>
 <html lang="es">
-<link rel="icon" type="image/png" href="../assets/img/favicon.png">
-
 <head>
-  <meta name="theme-color" content="#7E57C2">
-  <link rel="manifest" href="../manifest.json">
-  <link rel="apple-touch-icon" href="../assets/img/android-chrome-192x192.png">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>IoT Cart Manager · Control</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>IoT Car Manager · Control</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- ESTRUCTURA DE PANTALLA (Layout Flex) --- */
+        body, html { height: 100vh; margin: 0; overflow: hidden; background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        
+        .app-container { display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Navbar y Footer fijos */
+        .navbar { height: 60px; background: white; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+        .footer { height: 60px; background: #f8f9fa; border-top: 1px solid #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
 
-  <style>
-    /* --- TUS ESTILOS PERSONALIZADOS (RESTAURADOS) --- */
-    body {
-      background-color: #f8f9fa;
-    }
+        /* Área central que ocupa el resto del espacio */
+        .content-area { 
+            flex-grow: 1; 
+            padding: 15px; 
+            overflow: hidden; /* El scroll lo manejan los paneles internos */
+            height: calc(100vh - 120px); /* Total - Nav - Footer */
+        }
 
-    .control-card {
-      min-height: 400px;
-    }
+        /* GRID DE 3 COLUMNAS */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr 350px; /* Izquierda Fija | Centro Flexible | Derecha Fija */
+            gap: 15px;
+            height: 100%;
+        }
 
-    /* Grid del Joystick */
-    .drive-pad-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        /* ESTILO DE PANELES (TARJETAS) */
+        .panel {
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            height: 100%; 
+            border: 1px solid #e9ecef;
+        }
+        
+        .panel-header { 
+            padding: 12px 15px; 
+            background: #f8f9fa; 
+            border-bottom: 1px solid #eee; 
+            font-weight: bold; 
+            color: #495057; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0;
+        }
+        
+        .panel-body { 
+            padding: 15px; 
+            overflow-y: auto; 
+            flex-grow: 1; 
+            position: relative; /* Para posicionar elementos absolutos si hace falta */
+        }
 
-    .drive-pad-enhanced {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      max-width: 280px;
-    }
+        /* --- COLUMNA 1: JOYSTICK Y VELOCIDAD --- */
+        .drive-pad-enhanced { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 240px; margin: 0 auto; }
+        .drive-btn { height: 65px; border-radius: 12px; font-size: 24px; border: none; background: #f1f3f5; color: #333; transition: 0.1s; box-shadow: 0 3px 0 #dee2e6; }
+        .drive-btn:active { transform: translateY(3px); box-shadow: none; }
+        
+        .drive-btn-corner { background: #9c27b0 !important; color: white !important; box-shadow: 0 3px 0 #7b1fa2; }
+        .drive-btn-stop { background: #dc3545 !important; color: white !important; font-size: 30px; box-shadow: 0 3px 0 #b02a37; }
 
-    .drive-btn {
-      width: 80px;
-      height: 80px;
-      border: none;
-      border-radius: 12px;
-      font-size: 24px;
-      color: #333;
-      background-color: #e9ecef;
-      transition: all 0.2s;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+        .speed-control-container {
+            margin-top: auto; /* Empuja esto al fondo del panel */
+            padding-top: 15px;
+            border-top: 1px dashed #eee;
+        }
 
-    .drive-btn:active {
-      transform: scale(0.95);
-      box-shadow: none;
-    }
+        /* --- COLUMNA 2: SECUENCIAS --- */
+        .accordion-button { padding: 10px 15px; background-color: #fff; font-size: 0.95rem; }
+        .accordion-button:not(.collapsed) { color: #0d6efd; background-color: #e7f1ff; box-shadow: none; }
+        .accordion-button:focus { box-shadow: none; }
+        
+        /* --- COLUMNA 3: LOG --- */
+        .log-enhanced { 
+            background-color: #1a1a1a; 
+            color: #00ff00; 
+            font-family: 'Consolas', monospace; 
+            padding: 10px; 
+            font-size: 12px; 
+            height: 100%; 
+            overflow-y: auto; 
+        }
+        .log-line { border-bottom: 1px solid #333; padding: 4px 0; display: flex; align-items: flex-start; }
+        
+        /* HORA EN BLANCO (CORREGIDO) */
+        .log-time { color: #ffffff !important; font-weight: bold; margin-right: 8px; min-width: 65px; opacity: 0.9; }
+        .log-msg { word-break: break-word; }
+        
+        .text-success { color: #00e676 !important; }
+        .text-warning { color: #ffea00 !important; }
+        .text-danger { color: #ff5252 !important; }
 
-    /* Colores Específicos */
-    .drive-btn-corner {
-      background-color: #8b5cf6 !important;
-      color: white !important;
-    }
-
-    /* Morado */
-    .drive-btn-stop {
-      background-color: #dc3545 !important;
-      color: white !important;
-      font-size: 30px;
-    }
-
-    .drive-btn-up,
-    .drive-btn-down,
-    .drive-btn-left,
-    .drive-btn-right {
-      background-color: #fff;
-      border: 2px solid #dee2e6;
-    }
-
-    /* Log Console */
-    .log-enhanced {
-      height: 250px;
-      overflow-y: auto;
-      background-color: #1e1e1e;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
-      padding: 10px;
-      font-size: 13px;
-      border-radius: 0 0 5px 5px;
-    }
-
-    .log-line {
-      border-bottom: 1px solid #333;
-      padding: 2px 0;
-    }
-
-    .log-time {
-      color: #888;
-      margin-right: 5px;
-    }
-
-    .log-error {
-      color: #ff4444;
-    }
-
-    /* Badges de secuencia */
-    .sequence-display {
-      min-height: 50px;
-      padding: 10px;
-      background: #f8f9fa;
-      border-radius: 5px;
-      border: 1px dashed #ccc;
-      margin-bottom: 15px;
-    }
-  </style>
-
+        /* Responsive */
+        @media (max-width: 992px) {
+            body, html { overflow: auto; height: auto; }
+            .app-container { height: auto; display: block; }
+            .content-area { height: auto; padding: 10px; }
+            .dashboard-grid { display: flex; flex-direction: column; gap: 20px; height: auto; }
+            .panel { height: 500px; } /* Altura fija en móvil */
+            .navbar, .footer { position: relative; }
+        }
+    </style>
 </head>
-
 <body>
-  <nav class="navbar navbar-light bg-white border-bottom sticky-top">
-    <div class="container-fluid">
-      <div class="d-flex align-items-center gap-3">
-        <span id="connection-status" class="badge bg-danger">Desconectado</span>
-      </div>
-    </div>
-    <div class="container-fluid">
 
-      <a class="navbar-brand fw-bold fs-3" href="../">
-        <i class="fas fa-robot text-primary me-2"></i>IoT Cart Manager
-      </a>
+<div class="app-container">
 
-      <div class="d-flex align-items-center gap-2">
-
-        <a class="btn btn-outline-primary" href="../">
-          <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+    <nav class="navbar shadow-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold fs-4" href="../">
+          <i class="fas fa-robot text-primary me-2"></i>IoT Cart
         </a>
-
-        <a class="btn btn-primary active" href="#">
-          <i class="fas fa-gamepad me-1"></i>Control
-        </a>
-
-        <a class="btn btn-outline-primary" href="../monitor/">
-          <i class="fas fa-satellite-dish me-1"></i>Monitoreo
-        </a>
-      </div>
-
-    </div>
-    </div>
-  </nav>
-
-  <div class="container py-4">
-    <div class="row g-4">
-
-      <div class="col-lg-7">
-
-        <div class="card control-card shadow-lg border-0 mb-4">
-          <div class="card-body p-4">
-            <h1 class="display-6 fw-bold text-primary mb-3 text-center">Control Manual</h1>
-
-            <div class="drive-pad-container">
-              <div class="drive-pad-enhanced">
-                <button class="drive-btn drive-btn-corner" onclick="enviarComando('ADELANTE_IZQUIERDA')"><i
-                    class="fas fa-arrow-up"></i>↖️</button>
-                <button class="drive-btn drive-btn-up" onclick="enviarComando('ADELANTE')"><i
-                    class="fas fa-arrow-up"></i></button>
-                <button class="drive-btn drive-btn-corner" onclick="enviarComando('ADELANTE_DERECHA')"><i
-                    class="fas fa-arrow-up"></i>↗️</button>
-
-                <button class="drive-btn drive-btn-left" onclick="enviarComando('GIRO_90_IZQUIERDA')"><i
-                    class="fas fa-undo"></i></button>
-                <button class="drive-btn drive-btn-stop" onclick="enviarComando('DETENER')"><i
-                    class="fas fa-stop"></i></button>
-                <button class="drive-btn drive-btn-right" onclick="enviarComando('GIRO_90_DERECHA')"><i
-                    class="fas fa-redo"></i></button>
-
-                <button class="drive-btn drive-btn-corner" onclick="enviarComando('ATRAS_IZQUIERDA')"><i
-                    class="fas fa-arrow-down"></i>↙️</button>
-                <button class="drive-btn drive-btn-down" onclick="enviarComando('ATRAS')"><i
-                    class="fas fa-arrow-down"></i></button>
-                <button class="drive-btn drive-btn-corner" onclick="enviarComando('ATRAS_DERECHA')"><i
-                    class="fas fa-arrow-down"></i>↘️</button>
-              </div>
-
-              <div class="mt-3 d-flex gap-2">
-                <button class="btn btn-outline-primary" onclick="enviarComando('GIRO_360_IZQUIERDA')"><i
-                    class="fas fa-sync-alt me-2"></i>360° Izq</button>
-                <button class="btn btn-outline-primary" onclick="enviarComando('GIRO_360_DERECHA')"><i
-                    class="fas fa-sync-alt me-2"></i>360° Der</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white">
-            <h5 class="mb-0"><i class="fas fa-tachometer-alt text-warning me-2"></i>Velocidad</h5>
-          </div>
-          <div class="card-body text-center bg-light">
-            <div class="btn-group w-100 mb-3" role="group">
-              <button type="button" class="btn btn-outline-success" onclick="setVelocidad(40)">🐢 Baja</button>
-              <button type="button" class="btn btn-outline-warning active" id="btn-med" onclick="setVelocidad(60)">🚶
-                Media</button>
-              <button type="button" class="btn btn-outline-danger" onclick="setVelocidad(100)">🐇 Alta</button>
-            </div>
-            <p class="mb-0 fw-bold text-muted">Potencia Actual: <span id="velocidad-texto" class="text-dark">MEDIA
-                (60%)</span></p>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0 fs-5"><i class="fas fa-list-ol me-2"></i>Secuencias Guardadas</h5>
-          </div>
-          <div class="card-body p-0">
-            <div class="list-group list-group-flush" id="saved-sequences-list">
-              <div class="list-group-item text-center p-4 text-muted">
-                <i class="fas fa-spinner fa-spin me-2"></i>Conectando para cargar...
-              </div>
-            </div>
-          </div>
+        <div class="d-flex align-items-center gap-2">
+          <span id="connection-status" class="badge bg-danger">Desconectado</span>
+          <a href="../" class="btn btn-sm btn-outline-secondary"><i class="fas fa-home"></i></a>
         </div>
       </div>
+    </nav>
 
-      <div class="col-lg-5">
+    <div class="content-area">
+        <div class="dashboard-grid">
 
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-success text-white">
-            <h5 class="card-title mb-0 fs-5"><i class="fas fa-magic me-2"></i>Creador de Secuencias</h5>
-          </div>
-          <div class="card-body text-center">
+            <div class="panel">
+                <div class="panel-header"><i class="fas fa-gamepad text-primary me-2"></i>Control Manual</div>
+                
+                <div class="panel-body d-flex flex-column">
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                        <div class="drive-pad-enhanced">
+                            <button class="drive-btn drive-btn-corner" onclick="enviarComando('ADELANTE_IZQUIERDA')">↖️</button>
+                            <button class="drive-btn" onclick="enviarComando('ADELANTE')">⬆️</button>
+                            <button class="drive-btn drive-btn-corner" onclick="enviarComando('ADELANTE_DERECHA')">↗️</button>
 
-            <button id="btn-record" class="btn btn-danger w-100 mb-2" onclick="toggleRecording()">
-              <i class="fas fa-circle me-2"></i> Iniciar Grabación
-            </button>
+                            <button class="drive-btn" onclick="enviarComando('GIRO_90_IZQUIERDA')">⬅️</button>
+                            <button class="drive-btn drive-btn-stop" onclick="enviarComando('DETENER')">🛑</button>
+                            <button class="drive-btn" onclick="enviarComando('GIRO_90_DERECHA')">➡️</button>
 
-            <div class="text-start mb-2"><small class="text-muted">Pasos grabados:</small></div>
-            <div class="sequence-display" id="current-sequence-display">
-              <span class="text-muted small fst-italic">La secuencia está vacía...</span>
+                            <button class="drive-btn drive-btn-corner" onclick="enviarComando('ATRAS_IZQUIERDA')">↙️</button>
+                            <button class="drive-btn" onclick="enviarComando('ATRAS')">⬇️</button>
+                            <button class="drive-btn drive-btn-corner" onclick="enviarComando('ATRAS_DERECHA')">↘️</button>
+                        </div>
+                        
+                        <div class="text-center mt-3 d-flex justify-content-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="enviarComando('GIRO_360_IZQUIERDA')">🔄 360 I</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="enviarComando('GIRO_360_DERECHA')">🔄 360 D</button>
+                        </div>
+                    </div>
+
+                    <div class="speed-control-container text-center">
+                        <label class="small fw-bold text-muted mb-2">POTENCIA DE MOTOR: <span id="velocidad-texto" class="text-dark">MEDIA (60%)</span></label>
+                        <div class="btn-group w-100" role="group">
+                            <button type="button" class="btn btn-outline-success" onclick="setVelocidad(40)">🐢 Baja</button>
+                            <button type="button" class="btn btn-outline-warning active" onclick="setVelocidad(60)">🚶 Media</button>
+                            <button type="button" class="btn btn-outline-danger" onclick="setVelocidad(100)">🐇 Alta</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="d-grid gap-2">
-              <input type="text" class="form-control" id="secuenciaNombre" placeholder="Nombre de la secuencia...">
-              <button id="btn-save-sequence" class="btn btn-primary" onclick="guardarSecuencia()" disabled>
-                <i class="fas fa-save me-2"></i> Guardar en BD
-              </button>
-              <button class="btn btn-outline-secondary" onclick="limpiarSecuencia()">Limpiar</button>
+            <div class="panel">
+                <div class="panel-header bg-success text-white">
+                    <span><i class="fas fa-play-circle me-2"></i>Secuencias</span>
+                    <button class="btn btn-sm btn-light py-0 text-success" onclick="cargarSecuenciasDeBD()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+                
+                <div class="panel-body p-0" style="background-color: #fff;">
+                    <div class="accordion accordion-flush" id="accordionSecuencias">
+                        <div class="p-5 text-center text-muted">
+                            <i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>Cargando secuencias...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light border-top">
+                    <div class="input-group mb-2">
+                        <span class="input-group-text bg-white"><i class="fas fa-pen"></i></span>
+                        <input type="text" id="secuenciaNombre" class="form-control" placeholder="Nombre nueva secuencia...">
+                        <button id="btn-record" class="btn btn-danger" onclick="toggleRecording()"><i class="fas fa-circle"></i> REC</button>
+                    </div>
+                    <div id="current-sequence-display" class="small text-muted mb-2 text-truncate border rounded p-1 bg-white">...</div>
+                    <div class="d-flex gap-2">
+                        <button id="btn-save-sequence" class="btn btn-primary flex-grow-1" onclick="guardarSecuencia()" disabled>Guardar</button>
+                        <button class="btn btn-outline-secondary" onclick="limpiarSecuencia()"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-dark text-white">
-            <h5 class="card-title mb-0 fs-5"><i class="fas fa-terminal me-2"></i>Registro</h5>
-          </div>
-          <div class="card-body p-0">
-            <div class="log-enhanced" id="log"></div>
-          </div>
-        </div>
+            <div class="panel">
+                <div class="panel-header bg-dark text-white"><i class="fas fa-terminal me-2"></i>Terminal</div>
+                
+                <div class="panel-body p-0">
+                    <div class="log-enhanced" id="log">
+                        <div class="log-line"><span class="log-time text-white">SYSTEM</span> <span class="text-success">Interfaz iniciada...</span></div>
+                    </div>
+                </div>
+                
+                <div class="p-3 border-top bg-light">
+                     <button class="btn btn-warning w-100 fw-bold shadow-sm" onclick="simularObstaculo()">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Simular Obstáculo
+                     </button>
+                </div>
+            </div>
 
-        <div class="card shadow-sm border-0">
-          <div class="card-body d-grid">
-            <button class="btn btn-warning" onclick="simularObstaculo()">
-              <i class="fas fa-exclamation-triangle me-2"></i> Simular Obstáculo
-            </button>
-          </div>
         </div>
-
-      </div>
     </div>
-  </div>
 
-  <footer class="footer mt-5 py-4 bg-light border-top">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <p class="mb-0 fw-bold fs-5">
-            <i class="fas fa-user-graduate me-2 text-primary"></i>
-            Mary Jose Hernández Fernández
-          </p>
-          <p class="mb-0 text-muted fs-6">
-            <i class="fas fa-laptop-code me-2"></i>
-            Ingeniería en Sistemas Computacionales
-          </p>
+    <footer class="footer">
+        <div class="container text-center">
+            <span class="text-muted fw-bold">Mary Jose Hernández Fernández</span>
+            <span class="mx-2">|</span>
+            <small class="text-muted">Ingeniería en Sistemas</small>
+            <a href="https://linkedin.com" target="_blank" class="ms-3 text-primary"><i class="fab fa-linkedin"></i></a>
         </div>
-        <div class="col-md-6 text-md-end">
-          <a href="https://www.linkedin.com/in/mary-jose-hernández-fernández" class="btn btn-outline-primary btn-lg"
-            target="_blank">
-            <i class="fab fa-linkedin me-2"></i>
-            Conectar en LinkedIn
-          </a>
-        </div>
-      </div>
-    </div>
-  </footer>
-  <script>
-    // ================= CONFIGURACIÓN =================
-    const HOST_IP = "18.207.21.168"; // IP DE TU SERVIDOR AWS
+    </footer>
+
+</div>
+
+<script>
+    const HOST_IP = "18.207.21.168"; 
     const WS_PORT = "5500";
-
-    const WS_URL = `ws://${HOST_IP}:${WS_PORT}/api/ws`;
+    const WS_URL = `ws://${HOST_IP}:${WS_PORT}/api/ws`; 
     const API_URL = `http://${HOST_IP}:${WS_PORT}/api`;
 
-    // ================= VARIABLES GLOBALES =================
     let socket;
-    let velocidadActual = 60; // Por defecto Media
+    let velocidadActual = 60;
     let isRecording = false;
     let currentSequence = [];
 
-    // ================= 1. WEBSOCKET =================
-    function conectarWebSocket() {
-      addLog("Conectando WebSocket...", true);
-      socket = new WebSocket(WS_URL);
+    // --- UTILIDADES ---
+    function addLog(msg, type = "info") {
+        const logDiv = document.getElementById("log");
+        const time = new Date().toLocaleTimeString();
+        let colorClass = "text-white"; 
+        
+        if (type === "error") colorClass = "text-danger";
+        if (type === "warning") colorClass = "text-warning";
+        if (type === "success") colorClass = "text-success";
 
-      socket.onopen = () => {
-        document.getElementById("connection-status").className = "badge bg-success";
-        document.getElementById("connection-status").innerText = "Conectado";
-        addLog("WebSocket Conectado");
-        cargarSecuenciasDeBD(); // Cargar lista al conectar
-      };
-
-      socket.onclose = () => {
-        document.getElementById("connection-status").className = "badge bg-danger";
-        document.getElementById("connection-status").innerText = "Desconectado";
-        addLog("WebSocket Desconectado. Reintentando...");
-        setTimeout(conectarWebSocket, 3000);
-      };
-
-      socket.onmessage = (event) => {
-        try {
-          const msg = JSON.parse(event.data);
-          manejarMensajeWS(msg);
-        } catch (e) { console.error(e); }
-      };
-    }
-
-    function manejarMensajeWS(msg) {
-      if (msg.type === "new_movement") {
-        addLog(`PUSH: ${msg.movement.movement_code} (${msg.movement.speed_pct}%)`);
-      } else if (msg.type === "sequences_updated") {
-        addLog("BD Actualizada: Recargando lista...");
-        cargarSecuenciasDeBD();
-      } else if (msg.type === "movement_done") {
-        addLog(`CARRO: Terminó ${msg.code}`);
-      }
-    }
-
-    // ================= 2. CONTROL MANUAL Y VELOCIDAD =================
-
-    // Se llama desde los botones de velocidad
-    function setVelocidad(pct) {
-      velocidadActual = pct;
-      let texto = "MEDIA";
-      if (pct <= 45) texto = "BAJA";
-      if (pct >= 80) texto = "ALTA";
-
-      document.getElementById("velocidad-texto").innerText = `${texto} (${pct}%)`;
-
-      // Actualizar estilo de botones (opcional visual)
-      document.querySelectorAll(".btn-group .btn").forEach(b => b.classList.remove("active"));
-      addLog(`Velocidad ajustada a ${pct}%`);
-    }
-
-    // ==========================================================
-    //       FUNCIÓN CORREGIDA: ENVIAR COMANDO (CONTROL MANUAL)
-    // ==========================================================
-    function enviarComando(codigo) {
-
-      // 1. --- ESTO ES LO QUE FALTABA PARA QUE GRABE ---
-      if (isRecording) {
-        currentSequence.push(codigo); // Guardamos el paso en la lista
-        actualizarVistaSecuencia();   // Actualizamos los badges en pantalla
-      }
-      // ------------------------------------------------
-
-      // 2. --- LÓGICA DE ENVÍO AL CARRO (HTTP) ---
-      if (!velocidadActual) velocidadActual = 70;
-
-      const payload = {
-        direction: codigo,
-        speed_pct: velocidadActual,
-        comment: "Manual Web"
-      };
-
-      console.log(`🚀 Enviando: ${codigo} (${velocidadActual}%)`);
-
-      fetch(`${API_URL}/control/move`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-        .catch(error => {
-          console.error("Error de red:", error);
-          addLog("Error de conexión con API", true);
-        });
-    }
-    // ================= 3. GRABADOR DE SECUENCIAS =================
-
-    function toggleRecording() {
-      isRecording = !isRecording;
-      const btn = document.getElementById("btn-record");
-
-      if (isRecording) {
-        btn.innerHTML = '<i class="fas fa-stop-circle me-2"></i> Detener Grabación';
-        btn.className = "btn btn-warning w-100 mb-2";
-        currentSequence = []; // Limpiar al iniciar nueva
-        actualizarVistaSecuencia();
-        addLog("🔴 Grabación iniciada");
-      } else {
-        btn.innerHTML = '<i class="fas fa-circle me-2"></i> Iniciar Grabación';
-        btn.className = "btn btn-danger w-100 mb-2";
-        addLog("⏹ Grabación detenida");
-      }
-      document.getElementById("btn-save-sequence").disabled = isRecording || currentSequence.length === 0;
-    }
-
-    function actualizarVistaSecuencia() {
-      const div = document.getElementById("current-sequence-display");
-      if (currentSequence.length === 0) {
-        div.innerHTML = '<span class="text-muted small fst-italic">La secuencia está vacía...</span>';
-        return;
-      }
-
-      // Crear badges bonitos
-      div.innerHTML = currentSequence.map(step => {
-        let color = "bg-primary";
-        if (step === "DETENER") color = "bg-danger";
-        if (step === "obstacle") color = "bg-warning text-dark";
-        return `<span class="badge ${color} me-1 mb-1">${step}</span>`;
-      }).join(" ");
-
-      document.getElementById("btn-save-sequence").disabled = isRecording;
-    }
-
-    function limpiarSecuencia() {
-      currentSequence = [];
-      actualizarVistaSecuencia();
-      addLog("Secuencia limpiada");
-    }
-
-    // ================= 4. API BASE DE DATOS =================
-
-    function guardarSecuencia() {
-      const nombre = document.getElementById("secuenciaNombre").value;
-      if (!nombre) { alert("Ponle nombre a la secuencia"); return; }
-      if (currentSequence.length === 0) { alert("La secuencia está vacía"); return; }
-
-      addLog(`Guardando secuencia "${nombre}"...`);
-
-      fetch(`${API_URL}/sequences`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: nombre, steps: currentSequence })
-      })
-        .then(res => {
-          if (!res.ok) throw new Error("Error en API");
-          return res.json();
-        })
-        .then(data => {
-          addLog("✅ Guardado exitoso!");
-          limpiarSecuencia();
-          document.getElementById("secuenciaNombre").value = "";
-          cargarSecuenciasDeBD();
-        })
-        .catch(err => {
-          console.error(err);
-          addLog("❌ Error al guardar (revisa Mixed Content)", true);
-        });
-    }
-
-    function cargarSecuenciasDeBD() {
-      fetch(`${API_URL}/sequences`)
-        .then(res => res.json())
-        .then(data => {
-          const lista = document.getElementById("saved-sequences-list");
-          lista.innerHTML = "";
-
-          if (data.length === 0) {
-            lista.innerHTML = '<div class="p-3 text-muted">No hay secuencias.</div>';
-            return;
-          }
-
-          data.forEach(seq => {
-            // item de lista
-            const item = document.createElement("div");
-            item.className = "list-group-item d-flex justify-content-between align-items-center";
-            item.innerHTML = `
-                    <div>
-                        <strong>${seq.name}</strong> 
-                        <small class="text-muted">(${seq.steps.length} pasos)</small>
-                    </div>
-                    <button class="btn btn-sm btn-success" onclick="ejecutarSecuencia('${seq.name}')">
-                        <i class="fas fa-play"></i>
-                    </button>
-                `;
-            lista.appendChild(item);
-          });
-        })
-        .catch(err => console.error("Error cargando lista", err));
-    }
-
-    function ejecutarSecuencia(nombre) {
-      addLog(`▶ Ejecutando: ${nombre}`);
-      fetch(`${API_URL}/control/run-sequence`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: nombre })
-      }).catch(err => addLog("Error ejecutando", true));
-    }
-
-    // ================= UTILIDADES =================
-    function addLog(msg, isError = false) {
-      const logDiv = document.getElementById("log");
-      const time = new Date().toLocaleTimeString();
-      const color = isError ? "text-danger" : "text-success"; // Rojo o Verde para el mensaje
-
-      // CORRECCIÓN AQUÍ: Usamos 'log-time' en vez de 'text-muted'
-      logDiv.innerHTML += `
+        logDiv.innerHTML += `
             <div class="log-line">
-                <span class="log-time">[${time}]</span> 
-                <span class="${color}">${msg}</span>
+                <span class="log-time">${time}</span> 
+                <span class="log-msg ${colorClass}">${msg}</span>
             </div>
         `;
-      logDiv.scrollTop = logDiv.scrollHeight;
+        logDiv.scrollTop = logDiv.scrollHeight;
     }
 
-    // INICIAR
+    // --- WEBSOCKET ---
+    function conectarWebSocket() {
+        addLog("Conectando WebSocket...", "warning");
+        socket = new WebSocket(WS_URL);
+
+        socket.onopen = () => {
+            document.getElementById("connection-status").className = "badge bg-success ms-2";
+            document.getElementById("connection-status").innerText = "Online";
+            addLog("Sistema Conectado ✅", "success");
+            cargarSecuenciasDeBD();
+        };
+
+        socket.onclose = () => {
+            document.getElementById("connection-status").className = "badge bg-danger ms-2";
+            document.getElementById("connection-status").innerText = "Offline";
+            addLog("Desconectado. Reintentando...", "error");
+            setTimeout(conectarWebSocket, 3000);
+        };
+        
+        socket.onmessage = (event) => {
+            try {
+                const msg = JSON.parse(event.data);
+                
+                if (msg.type === "new_movement") {
+                    addLog(`MOTOR: ${msg.movement.movement_code} (${msg.movement.speed_pct}%)`);
+                } 
+                else if (msg.type === "new_obstacle") {
+                    const dist = msg.obstacle.distance_cm;
+                    addLog(`🚨 ALERTA: Obstáculo a ${dist}cm`, "warning");
+                }
+                else if (msg.type === "movement_done") {
+                    if (msg.code === "OBSTACULO_SUPERADO") addLog("✅ Obstáculo evadido.", "success");
+                }
+                else if (msg.type === "sequences_updated") {
+                    addLog("Base de datos actualizada", "info");
+                    cargarSecuenciasDeBD();
+                }
+            } catch(e) {}
+        };
+    }
+
+    // --- CONTROL ---
+    window.setVelocidad = (pct) => {
+        velocidadActual = pct;
+        let txt = pct <= 45 ? "BAJA" : (pct >= 80 ? "ALTA" : "MEDIA");
+        document.getElementById("velocidad-texto").innerText = `${txt} (${pct}%)`;
+        
+        // Estilo visual botones
+        const btns = document.querySelectorAll('.speed-control-container .btn');
+        btns.forEach(b => b.classList.remove('active'));
+    };
+
+    window.enviarComando = (codigo) => {
+        if (isRecording) {
+            currentSequence.push(codigo);
+            document.getElementById("current-sequence-display").innerText = currentSequence.join(" > ");
+        }
+        const payload = { direction: codigo, speed_pct: velocidadActual, comment: "Manual Web" };
+        fetch(`${API_URL}/control/move`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(() => addLog("Error API", "error"));
+    };
+
+    window.simularObstaculo = () => {
+        addLog("Enviando simulación...", "warning");
+        fetch(`${API_URL}/control/obstacle`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ distanceCm: 10, thresholdCm: 20 })
+        });
+    };
+
+    // --- SECUENCIAS ---
+    window.toggleRecording = () => {
+        isRecording = !isRecording;
+        const btn = document.getElementById("btn-record");
+        if (isRecording) {
+            currentSequence = [];
+            btn.innerHTML = '<i class="fas fa-stop"></i>';
+            btn.className = "btn btn-warning";
+            addLog("Grabando secuencia...", "warning");
+        } else {
+            btn.innerHTML = '<i class="fas fa-circle"></i> REC';
+            btn.className = "btn btn-danger";
+            document.getElementById("btn-save-sequence").disabled = currentSequence.length === 0;
+            addLog("Grabación finalizada");
+        }
+    };
+
+    window.guardarSecuencia = () => {
+        const nombre = document.getElementById("secuenciaNombre").value;
+        if (!nombre) return alert("Escribe un nombre");
+        
+        fetch(`${API_URL}/sequences`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: nombre, steps: currentSequence })
+        }).then(() => {
+            addLog("Secuencia guardada exitosamente", "success");
+            currentSequence = [];
+            document.getElementById("current-sequence-display").innerText = "...";
+            document.getElementById("secuenciaNombre").value = "";
+            cargarSecuenciasDeBD();
+        });
+    };
+
+    window.limpiarSecuencia = () => {
+        currentSequence = [];
+        document.getElementById("current-sequence-display").innerText = "...";
+    };
+
+    window.cargarSecuenciasDeBD = () => {
+        fetch(`${API_URL}/sequences`)
+        .then(r => r.json())
+        .then(data => {
+            const accordion = document.getElementById("accordionSecuencias");
+            accordion.innerHTML = "";
+            
+            if (data.length === 0) {
+                accordion.innerHTML = '<div class="p-5 text-center text-muted">No hay secuencias guardadas.</div>';
+                return;
+            }
+
+            data.forEach((seq, index) => {
+                const id = `collapse${index}`;
+                // Badges
+                const stepsBadges = seq.steps.map(s => {
+                    let color = "bg-primary";
+                    if(s==="DETENER") color="bg-danger";
+                    if(s==="obstacle") color="bg-warning text-dark";
+                    return `<span class="badge ${color} m-1">${s}</span>`;
+                }).join("");
+
+                const item = `
+                <div class="accordion-item border-0 border-bottom">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${id}">
+                            <div class="d-flex w-100 justify-content-between align-items-center me-2">
+                                <span class="fw-bold text-dark">${seq.name}</span>
+                                <span class="badge bg-secondary rounded-pill">${seq.steps.length} pasos</span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="${id}" class="accordion-collapse collapse" data-bs-parent="#accordionSecuencias">
+                        <div class="accordion-body bg-light">
+                            <div class="d-flex flex-wrap gap-1 mb-2">${stepsBadges}</div>
+                            <button class="btn btn-success btn-sm w-100" onclick="ejecutarSecuencia('${seq.name}')">
+                                <i class="fas fa-play me-2"></i> Ejecutar
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+                accordion.innerHTML += item;
+            });
+        })
+        .catch(err => {
+            console.error("Error lista", err);
+            document.getElementById("accordionSecuencias").innerHTML = '<div class="p-3 text-center text-danger">Error al cargar datos.</div>';
+        });
+    };
+
+    window.ejecutarSecuencia = (nombre) => {
+        addLog(`▶ Ejecutando: ${nombre}`, "info");
+        fetch(`${API_URL}/control/run-sequence`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: nombre })
+        });
+    };
+
     conectarWebSocket();
-    window.toggleRecording = toggleRecording;
-    window.guardarSecuencia = guardarSecuencia;
-    window.limpiarSecuencia = limpiarSecuencia;
-    window.simularObstaculo = simularObstaculo;
-    window.enviarComando = enviarComando;
-    window.ejecutarSecuencia = ejecutarSecuencia;
-  </script>
+</script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      // Aquí también usamos ".." para buscar el sw.js en la raíz
-      navigator.serviceWorker.register('../sw.js');
-    }
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
